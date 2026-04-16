@@ -1,0 +1,119 @@
+function obj = calc_average_impacts_of_driving(obj)
+
+flds = {'value_glider','value_powertrain','value_energy_storage', ...
+    'value_energy_chain','value_maintenance','value_EoL', ...
+    'value_road','value_direct_non_exhaust','value_direct_exhaust'};
+
+
+cars_produced_per_year_of_archetype = zeros(length(obj.VehicleArchetype), length(obj.VehicleArchetype(1).year_cars_produced));
+
+for i = 1:length(obj.VehicleArchetype)
+    cars_produced_per_year_of_archetype(i,:) = obj.VehicleArchetype(i).number_of_cars_from_year;
+end
+
+
+for i = 1:length(obj.Midpoint_impacts)
+    obj.Midpoint_impacts(i).time = obj.year;
+
+    impact_id = obj.Midpoint_impacts(i).id;
+
+    mirror_impact_after_production_year = zeros(length(obj.VehicleArchetype), length(obj.VehicleArchetype(1).year_cars_produced));
+    mirror_impact_after_production_year_and_contributors = zeros(length(obj.VehicleArchetype), length(obj.VehicleArchetype(1).year_cars_produced), length(flds));
+    
+    for j = 1:length(obj.VehicleArchetype)
+        for k = 1:length(obj.VehicleArchetype(j).year_cars_produced)
+
+            % doble check that impact ids match
+            if obj.VehicleArchetype(j).Midpoint_impacts_SSP2_NPi(i).id ~= impact_id
+                error('Impact category IDs do not match..')
+            end
+
+            mirror_impact_after_production_year(j,k) = obj.VehicleArchetype(j).Midpoint_impacts_SSP2_NPi(i).value(k);
+
+            for f = 1:length(flds)
+                mirror_impact_after_production_year_and_contributors(j,k,f) = obj.VehicleArchetype(j).Midpoint_impacts_SSP2_NPi(i).(flds{f})(k);
+            end
+        end
+    end
+
+    sum_impact_proxy = sum(sum(cars_produced_per_year_of_archetype.*mirror_impact_after_production_year));
+    sum_impact_new_cars = sum(sum(cars_produced_per_year_of_archetype(:,end).*mirror_impact_after_production_year(:,end)));
+
+    tot_cars = sum(sum(cars_produced_per_year_of_archetype));
+    tot_new_cars = sum(sum(cars_produced_per_year_of_archetype(:,end)));
+
+    average_impact_in_year = sum_impact_proxy/tot_cars;
+     average_impact_new_cars = sum_impact_new_cars/tot_new_cars;
+
+    obj.Midpoint_impacts(i).value = average_impact_in_year;
+    obj.Midpoint_impacts_new_cars(i).value = average_impact_new_cars;
+
+    for f = 1:length(flds)
+        sum_impact_proxy_contributor = sum(sum(cars_produced_per_year_of_archetype.*mirror_impact_after_production_year_and_contributors(:,:,f)));
+        average_impact_in_year_contributor = sum_impact_proxy_contributor/tot_cars;
+        obj.Midpoint_impacts(i).(flds{f}) = average_impact_in_year_contributor;
+
+
+        sum_impact_proxy_contributor_new_cars = sum(sum(cars_produced_per_year_of_archetype(:,end).*mirror_impact_after_production_year_and_contributors(:,end,f)));
+        average_impact_in_year_contributor_new_cars = sum_impact_proxy_contributor_new_cars/tot_new_cars;
+        obj.Midpoint_impacts_new_cars(i).(flds{f}) = average_impact_in_year_contributor_new_cars;
+    end
+
+
+
+end % for midpoint impacts
+
+%% ENDPOINT
+for i = 1:length(obj.Endpoint_impacts)
+    obj.Endpoint_impacts(i).time = obj.year;
+
+    impact_id = obj.Endpoint_impacts(i).id;
+
+    mirror_impact_after_production_year = zeros(length(obj.VehicleArchetype), length(obj.VehicleArchetype(1).year_cars_produced));
+    mirror_impact_after_production_year_and_contributors = zeros(length(obj.VehicleArchetype), length(obj.VehicleArchetype(1).year_cars_produced), length(flds));
+    
+    for j = 1:length(obj.VehicleArchetype)
+        for k = 1:length(obj.VehicleArchetype(j).year_cars_produced)
+
+            % doble check that impact ids match
+            if obj.VehicleArchetype(j).Endpoint_impacts_SSP2_NPi(i).id ~= impact_id
+                error('Impact category IDs do not match..')
+            end
+
+            mirror_impact_after_production_year(j,k) = obj.VehicleArchetype(j).Endpoint_impacts_SSP2_NPi(i).value(k);
+
+            for f = 1:length(flds)
+                mirror_impact_after_production_year_and_contributors(j,k,f) = obj.VehicleArchetype(j).Endpoint_impacts_SSP2_NPi(i).(flds{f})(k);
+            end
+        end
+    end
+
+    sum_impact_proxy = sum(sum(cars_produced_per_year_of_archetype.*mirror_impact_after_production_year));
+
+    sum_impact_new_cars = sum(sum(cars_produced_per_year_of_archetype(:,end).*mirror_impact_after_production_year(:,end)));
+
+    tot_cars = sum(sum(cars_produced_per_year_of_archetype));
+      tot_new_cars = sum(sum(cars_produced_per_year_of_archetype(:,end)));
+
+    average_impact_in_year = sum_impact_proxy/tot_cars;
+    average_impact_new_cars = sum_impact_new_cars/tot_new_cars;
+
+    obj.Endpoint_impacts(i).value = average_impact_in_year;
+    obj.Endpoint_impacts_new_cars(i).value = average_impact_new_cars;
+
+
+    for f = 1:length(flds)
+        sum_impact_proxy_contributor = sum(sum(cars_produced_per_year_of_archetype.*mirror_impact_after_production_year_and_contributors(:,:,f)));
+        average_impact_in_year_contributor = sum_impact_proxy_contributor/tot_cars;
+        obj.Endpoint_impacts(i).(flds{f}) = average_impact_in_year_contributor;
+
+        sum_impact_proxy_contributor_new_cars = sum(sum(cars_produced_per_year_of_archetype(:,end).*mirror_impact_after_production_year_and_contributors(:,end,f)));
+        average_impact_in_year_contributor_new_cars = sum_impact_proxy_contributor_new_cars/tot_new_cars;
+        obj.Endpoint_impacts_new_cars(i).(flds{f}) = average_impact_in_year_contributor_new_cars;
+    end
+
+
+end % for endpoint impacts
+
+end % function
+

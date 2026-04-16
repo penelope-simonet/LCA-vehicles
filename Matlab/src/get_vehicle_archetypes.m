@@ -1,0 +1,51 @@
+function VehicleArchetypeArray = get_vehicle_archetypes()
+
+powertrains = {'BEV' , 'FCEV', 'HEV-d', 'HEV-p', 'ICEV-d', 'ICEV-g', 'ICEV-p', 'PHEV-d', 'PHEV-p'};
+sizes = {'Large', 'Large SUV', 'Lower medium', 'Medium', 'Medium SUV', 'Micro', 'Mini', 'Small', 'Van', 'XL-SUV'};
+
+
+powertrain_Rousseau_string = {'05 - Elektrisk', 'N/A', '08 - Diesel hybrid', '07 - Bensin hybrid', '02 - Diesel', '01 - Bensin',...
+    'N/A', '08 - Diesel hybrid', '07 - Bensin hybrid'};
+
+is_hybrid = [0 0 1 1 0 0 0 1 1];
+
+n_archetypes = length(powertrains)*length(sizes);
+
+VehicleArchetypeArray(1:n_archetypes) = Vehicle_archetype;
+
+c=0;
+for i = 1:length(powertrains)
+    for j = 1:length(sizes)
+        c=c+1;
+        VehicleArchetypeArray(c).id = i;
+        VehicleArchetypeArray(c).id_archetype = c;
+        VehicleArchetypeArray(c).powertrain = powertrains{i};
+        VehicleArchetypeArray(c).size = sizes{j};
+        VehicleArchetypeArray(c).powertrain_Rousseau_string = powertrain_Rousseau_string{i};   
+        VehicleArchetypeArray(c).is_hybrid = is_hybrid(i);
+
+        %if strcmp(VehicleArchetypeArray(c).powertrain, 'BEV') || strcmp(VehicleArchetypeArray(c).powertrain, 'PHEV-d') || strcmp(VehicleArchetypeArray(c).powertrain, 'PHEV-g' )
+        if strcmp(VehicleArchetypeArray(c).size, 'Mini')
+            VehicleArchetypeArray(c).weight_kg_bnds = [400 900];
+        elseif strcmp(VehicleArchetypeArray(c).size, 'Small')
+            VehicleArchetypeArray(c).weight_kg_bnds = [900 1250];
+        elseif strcmp(VehicleArchetypeArray(c).size, 'Lower medium')
+            VehicleArchetypeArray(c).weight_kg_bnds = [1250 1500];
+        elseif strcmp(VehicleArchetypeArray(c).size, 'Medium')
+            VehicleArchetypeArray(c).weight_kg_bnds = [1500 1750];
+        elseif strcmp(VehicleArchetypeArray(c).size, 'Large')
+            VehicleArchetypeArray(c).weight_kg_bnds = [1750 2000];
+        elseif strcmp(VehicleArchetypeArray(c).size, 'Large SUV')
+            VehicleArchetypeArray(c).weight_kg_bnds = [2000 4000];
+        else
+            VehicleArchetypeArray(c).weight_kg_bnds = [0 0];
+        end
+        %end
+
+    end
+end
+
+
+
+end
+

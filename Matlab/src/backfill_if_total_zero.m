@@ -1,0 +1,88 @@
+function imp = backfill_if_total_zero(imp, imp_end)
+% Fields to backfill. Assumes donor is filled already.
+fields = {'value_glider','value_powertrain','value_energy_storage', ...
+    'value_energy_chain','value_maintenance','value_EoL', ...
+    'value_road','value_direct_non_exhaust','value_direct_exhaust'};
+
+
+
+% for i = 1:length(imp.time)
+%     pos_end = -9999;
+%     miss_value =1;
+%     for j = 1:length(fields)
+%         if imp.(fields{j})(i) > 0
+%             miss_value = 0;
+%         end
+%     end
+% 
+%     if miss_value
+%         for t = 1:length(imp_end.time)
+%             if imp_end.time(t) == imp.time(i)
+%                 pos_end = t;
+%                 break
+%             end
+%         end
+% 
+%         for j = 1:length(fields)
+%             imp.(fields{j})(i) = imp_end.(fields{j})(pos_end);
+%         end
+% 
+%     end
+% end
+
+
+% Vectorized backfill from donor 'imp_end' into target 'imp'
+% ONLY at times where ALL contributor fields in target are zero.
+% Times are matched by equality of imp.time and imp_end.time.
+
+    % Contributor fields to consider
+    fields = {'value_glider','value_powertrain','value_energy_storage', ...
+              'value_energy_chain','value_maintenance','value_EoL', ...
+              'value_road','value_direct_non_exhaust','value_direct_exhaust'};
+
+    % Ensure row vectors for times
+    tT = double(imp.time(:).');      % target times
+    tD = double(imp_end.time(:).');  % donor times
+    nT = numel(tT);
+
+    % Map target times -> donor indices (vectorized)
+    [hasDonor, idxD] = ismember(tT, tD);   % true where donor has that time
+
+    % Build a logical matrix: contributors nonzero? [nFields x nTimes]
+    nF = numel(fields);
+    nonZero = false(nF, nT);
+    for k = 1:nF
+        vk = imp.(fields{k});
+        if isempty(vk), vk = zeros(1, nT); else, vk = vk(:).'; end
+        if numel(vk) < nT, vk(end+1:nT) = 0; end
+        nonZero(k,:) = (vk ~= 0);
+    end
+
+    % Fill positions: all contributors zero AND donor has that time
+    fillMask = ~any(nonZero, 1) & hasDonor;
+
+    if any(fillMask)
+        dIdx = idxD(fillMask);  % donor indices for those times
+
+        % Copy each contributor field in one pass
+        for k = 1:nF
+            src = imp_end.(fields{k});
+            if isempty(src), src = zeros(1, numel(tD)); else, src = src(:).'; end
+
+            tgt = imp.(fields{k});
+            if isempty(tgt), tgt = zeros(1, nT); else, tgt = tgt(:).'; end
+            if numel(tgt) < nT, tgt(end+1:nT) = 0; end
+
+            tgt(fillMask) = src(dIdx);
+            imp.(fields{k}) = tgt;
+        end
+    end
+
+    % (Optional) keep .value consistent with contributors:
+    % S = zeros(1, nT);
+    % for k = 1:nF, S = S + imp.(fields{k})(1:nT); end
+    % imp.value = S;
+
+
+end
+

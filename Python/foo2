@@ -1,0 +1,7 @@
+from carculator import load_default_inputs, CarModel
+
+scope = {"powertrain": ["BEV"], "size": ["Medium"], "year": [2025]}
+arr = load_default_inputs("WLTC", scope)
+cm = CarModel(arr)
+res = cm.calculate_impacts()
+print(res)
