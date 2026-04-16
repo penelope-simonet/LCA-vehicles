@@ -1,0 +1,5 @@
+# Gros fichiers de données à exclure de Git
+Matlab/input/demografi.nc
+Matlab/input/*.nc
+Matlab/input/*.csv
+examples (1)/
