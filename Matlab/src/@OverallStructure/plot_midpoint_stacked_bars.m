@@ -33,7 +33,7 @@ for y = 1:n_years
     year_indices(y) = find(years_all == years_to_plot(y));
 end
  
-% Collecter les données
+% collect datas
 data = zeros(n_cats, n_years, n_flds);
 for y = 1:n_years
     state = obj.State(year_indices(y));
@@ -44,7 +44,7 @@ for y = 1:n_years
     end
 end
  
-% Normaliser par le total 2000
+% Normalise by 2000
 data_norm = zeros(size(data));
 for c = 1:n_cats
     total_2000 = sum(squeeze(data(c, 1, :)));
@@ -53,10 +53,10 @@ for c = 1:n_cats
     end
 end
  
-% --- Paramètres de taille ---
-bar_height  = 0.10;   % barres fines
-bar_spacing = 0.13;   % espacement entre les 3 barres d'un groupe
-group_gap   = 0.22;   % espace entre groupes de catégories
+% size
+bar_height  = 0.10;   
+bar_spacing = 0.13;   
+group_gap   = 0.22;   
  
 y_positions = zeros(n_cats, n_years);
 for c = 1:n_cats
@@ -70,7 +70,6 @@ fig = figure('Units', 'normalized', 'Position', [0.02 0.02 0.75 0.92]);
 ax = axes('Parent', fig, 'Position', [0.32 0.08 0.64 0.88]);
 hold(ax, 'on');
  
-% Dessiner les barres avec patch
 for c = 1:n_cats
     for y = 1:n_years
         x_start = 0;
@@ -89,13 +88,13 @@ for c = 1:n_cats
     end
 end
  
-% Lignes de séparation entre catégories
+% separator lines between categories
 for c = 1:n_cats-1
     sep_y = (y_positions(c, n_years) + y_positions(c+1, 1)) / 2;
     plot(ax, [0 3], [sep_y sep_y], '-', 'Color', [0.88 0.88 0.88], 'LineWidth', 0.5);
 end
  
-% Labels des catégories (à gauche des barres)
+% labels
 cat_label_y = mean(y_positions, 2);
 for c = 1:n_cats
     text(ax, -0.1, cat_label_y(c), cat_names{c}, ...
@@ -104,7 +103,6 @@ for c = 1:n_cats
         'FontSize', 7, 'FontWeight', 'bold');
 end
  
-% Labels des années (à gauche, décalés encore plus à gauche que les noms)
 for c = 1:n_cats
     for y = 1:n_years
         text(ax, -0.02, y_positions(c,y), year_labels{y}, ...
@@ -114,20 +112,20 @@ for c = 1:n_cats
     end
 end
  
-% Ligne de référence x=1
+% line x=1
 xline(ax, 1, '--', 'Color', [0.3 0.3 0.3], 'LineWidth', 1.0);
  
-% Mise en forme
+
 set(ax, 'YTick', [], 'YDir', 'reverse', 'FontSize', 8);
 xlabel(ax, 'Normalized impact (relative to year 2000)', 'FontSize', 9);
-title(ax, 'Midpoint impacts — Norwegian new cars (2000, 2010, 2023)', ...
+title(ax, 'Midpoint impacts : Norwegian new cars (2000, 2010, 2023)', ...
     'FontSize', 10, 'FontWeight', 'bold');
 xlim(ax, [-0.02 max(data_norm(:))*1.05]);
 ylim(ax, [y_positions(1,1) - bar_spacing, y_positions(end,end) + bar_spacing]);
 grid(ax, 'off');
 box(ax, 'off');
  
-% Légende
+% legend
 h = zeros(1, n_flds);
 for f = 1:n_flds
     h(f) = patch(ax, NaN, NaN, colors(f,:), 'EdgeColor', 'none');

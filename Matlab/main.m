@@ -770,6 +770,8 @@ for i = 1:numel(OS.State)
 OS.State(i) = OS.State(i).calc_average_impacts_of_driving();
 end
 
-
+%% Normalization
+fprintf('Calculating normalization...\n')
+OS = OS.calc_normalization();
 
 toc

@@ -9,6 +9,7 @@ classdef State
         Endpoint_impacts
         Midpoint_impacts_new_cars
         Endpoint_impacts_new_cars
+        Normalization
     end
     
     methods

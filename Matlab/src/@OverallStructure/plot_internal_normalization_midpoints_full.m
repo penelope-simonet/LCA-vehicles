@@ -1,6 +1,6 @@
 function plot_internal_normalization_midpoints_full(obj)
  
-% Get all midpoint category names and ids
+% Get midpoint category names and ids
 midpoint_categories = get_midpoint_categories();
 n_cats = length(midpoint_categories);
  
@@ -14,7 +14,7 @@ legend_array = {'Glider', 'Powertrain', 'Energy storage', 'Maintenance', 'EoL', 
 flds = flip(flds);
 legend_array = flip(legend_array);
  
-% Output PDF filename
+% Output PDF
 output_pdf = 'Output/midpoints_all_categories.pdf';
 if exist(output_pdf, 'file'), delete(output_pdf); end
  
@@ -27,7 +27,7 @@ for cat = 1:n_cats
  
     fprintf('Plotting midpoint category %d/%d: %s\n', cat, n_cats, cat_name);
  
-    %% --- Collect data ---
+    %% collect data
     data_raw          = zeros(1, length(years));
     data_raw_new_cars = zeros(1, length(years));
  
@@ -49,7 +49,7 @@ for cat = 1:n_cats
         plot_matrix_new_cars = data_raw_new_cars;
     end
  
-    %% --- Stacked bar data ---
+    %% stacked bar data
     data_components          = zeros(length(flds), length(years));
     data_components_new_cars = zeros(length(flds), length(years));
  
@@ -60,54 +60,53 @@ for cat = 1:n_cats
         end
     end
  
-    %% --- Figure avec 4 sous-graphiques ---
+    %% figure
     fig = figure('Visible', 'off');
     set(fig, 'Units', 'centimeters', 'Position', [0 0 42 20]);
  
-    % Titre général de la page
     sgtitle(['Midpoint: ' cat_name], 'FontSize', 14, 'FontWeight', 'bold');
  
-    % --- Subplot 1 : normalisation interne, parc entier ---
+    % subplot 1 : internal normalization, vehicle stock
     subplot(2, 2, 1)
     plot(years, plot_matrix, 'LineWidth', 2.5, 'Color', [0.18 0.45 0.70]);
     xlabel('Year')
     ylabel('Internal normalization')
-    title('Vehicle stock — internal normalization')
+    title('Vehicle stock : internal normalization')
     ylim([0 2])
     grid on
  
-    % --- Subplot 2 : normalisation interne, nouvelles voitures ---
+    % subplot 2 : internal normalization, new cars
     subplot(2, 2, 2)
     plot(years, plot_matrix_new_cars, 'LineWidth', 2.5, 'Color', [0.85 0.33 0.10]);
     xlabel('Year')
     ylabel('Internal normalization')
-    title('New cars — internal normalization')
+    title('New cars : internal normalization')
     ylim([0 2])
     grid on
  
-    % --- Subplot 3 : barres empilées, parc entier ---
+    % subplot 3 : stacked bars, vehicule stock
     subplot(2, 2, 3)
     clrs = turbo(9);
     colororder(clrs);
     bar(years, data_components', 'Stacked');
     ylabel(cat_unit)
     xlabel('Year')
-    title('Vehicle stock — by contributor')
+    title('Vehicle stock : by contributor')
     legend(legend_array, 'Location', 'eastoutside', 'FontSize', 6)
     grid on
  
-    % --- Subplot 4 : barres empilées, nouvelles voitures ---
+    % subplot 4 : stacked bars, new cars
     subplot(2, 2, 4)
     clrs = turbo(9);
     colororder(clrs);
     bar(years, data_components_new_cars', 'Stacked');
     ylabel(cat_unit)
     xlabel('Year')
-    title('New cars — by contributor')
+    title('New cars : by contributor')
     legend(legend_array, 'Location', 'eastoutside', 'FontSize', 6)
     grid on
  
-    %% --- Append to PDF using exportgraphics ---
+    %% append to PDF with exportgraphics 
     exportgraphics(fig, output_pdf, 'Append', true, 'ContentType', 'vector');
  
     close(fig)
