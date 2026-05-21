@@ -1,7 +1,7 @@
 function plot_normalization(obj)
 
 midpoint_categories = get_midpoint_categories();
-n_cats = length(midpoint_categories);
+n_cats = 23;
 cat_names = {midpoint_categories.name};
 
 units_fleet = { ...
@@ -93,7 +93,7 @@ if ~exist(output_dir, 'dir'), mkdir(output_dir); end
 output_pdf = fullfile(output_dir, 'normalization_midpoints.pdf');
 if exist(output_pdf, 'file'), delete(output_pdf); end
 
-cats_to_exclude = [7, 20, 21, 22, 23];
+cats_to_exclude = [20, 21, 22, 23, 24:42];
 page = 0;
 
 rouge      = [0.85 0.10 0.10];
@@ -131,6 +131,7 @@ cat_colors(12,:) = [0.5 0 0];   cat_lines{12} = '-';  cat_markers{12} = 'none';
 cat_colors(13,:) = gris;        cat_lines{13} = '-';  cat_markers{13} = 'none';
 cat_colors(15,:) = [0 0 0];     cat_lines{15} = '-';  cat_markers{15} = 'none';
 cat_colors(19,:) = [0.3 0.7 1]; cat_lines{19} = '-';  cat_markers{19} = 'none';
+cat_colors(7, :) = [0.7 0.5 1]; cat_lines{7} = '-';  cat_markers{7} = 'none';
 
 marker_step = max(1, floor(n_years / 8));
 
@@ -187,11 +188,13 @@ marker_step = max(1, floor(n_years / 8));
         h_leg(11) = plot(ax, NaN, NaN, '-',   'Color', [0.5 1 0],     'LineWidth', 2);
         h_leg(12) = plot(ax, NaN, NaN, '-',  'Color', orange,     'LineWidth', 2);
         h_leg(13) = plot(ax, NaN, NaN, '--',  'Color', orange,     'LineWidth', 2);
-        h_leg(14) = plot(ax, NaN, NaN, '-',   'Color', violet,     'LineWidth', 2);
-        h_leg(15) = plot(ax, NaN, NaN, '-',   'Color', [0.5 0 0],       'LineWidth', 2);
-        h_leg(16) = plot(ax, NaN, NaN, '-',  'Color', gris,       'LineWidth', 2);
-        h_leg(17) = plot(ax, NaN, NaN, '-',  'Color', [0 0 0],       'LineWidth', 2);
-        h_leg(18) = plot(ax, NaN, NaN, '-', 'Color', [0.3 0.7 1], 'LineWidth', 2);
+        h_leg(14) = plot(ax, NaN, NaN, '-', 'Color', [0.7 0.5 1], 'LineWidth', 2);
+        h_leg(15) = plot(ax, NaN, NaN, '-',   'Color', violet,     'LineWidth', 2);
+        h_leg(16) = plot(ax, NaN, NaN, '-',   'Color', [0.5 0 0],       'LineWidth', 2);
+        h_leg(17) = plot(ax, NaN, NaN, '-',  'Color', gris,       'LineWidth', 2);
+        h_leg(18) = plot(ax, NaN, NaN, '-',  'Color', [0 0 0],       'LineWidth', 2);
+        h_leg(19) = plot(ax, NaN, NaN, '-', 'Color', [0.3 0.7 1], 'LineWidth', 2);
+       
 
         leg_labels = { ...
         'ecotoxicity: freshwater', 'ecotoxicity: marine', 'ecotoxicity: terrestrial', ...
@@ -199,9 +202,9 @@ marker_step = max(1, floor(n_years / 8));
         'climate change', 'climate change w bio', ...
         'acidification: terrestrial', 'eutrophication: freshwater', 'eutrophication: marine', ...
         'particulate matter formation', 'photochemical oxidant formation: human health', 'photochemical oxidant formation: terrestrial ecosystems', ...
-        'material resources: metals/minerals', ...
+        'material resources: metals/minerals', 'energy resources depletion: non-renewable' ...
         'ionising radiation', 'land use', 'ozone depletion', 'water use'};
-        legend(ax, h_leg(1:18), leg_labels, ...
+        legend(ax, h_leg(1:19), leg_labels, ...
             'Location', 'eastoutside', 'FontSize', 6.5, 'Box', 'off');
     end
 
@@ -263,7 +266,7 @@ for cat = 1:n_cats
 
     page = page + 1;
     export_page(fig, output_pdf, page);
-    fprintf('Page %d — %s\n', page, cat_name);
+    fprintf('Page %d : %s\n', page, cat_name);
 
 end
 

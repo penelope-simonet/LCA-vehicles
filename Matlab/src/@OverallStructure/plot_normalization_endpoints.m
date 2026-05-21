@@ -120,7 +120,7 @@ for c = 1:n_cats
         'MarkerFaceColor', colors{c}, 'MarkerSize',4);
 end
 ylabel('Internal normalization (relative to 2000)');
-title('Calculation 1 — Norwegian fleet share of World total endpoint impact per year');
+title('Calculation 1 : Norwegian fleet share of World total endpoint impact per year');
 legend(cat_names, 'Location','northwest', 'FontSize',8, 'Box','off');
 grid on; box off;
 
@@ -133,7 +133,7 @@ for c = 1:n_cats
         'MarkerFaceColor', colors{c}, 'MarkerSize',4);
 end
 ylabel('Internal normalization (relative to 2000)');
-title('Calculation 2 — New cars share of World total endpoint impact per vkm');
+title('Calculation 2 : New cars share of World total endpoint impact per vkm');
 legend(cat_names, 'Location','northwest', 'FontSize',8, 'Box','off');
 grid on; box off;
 
@@ -147,7 +147,7 @@ for c = 1:n_cats
 end
 xlabel('Year');
 ylabel('Internal normalization (relative to 2000)');
-title('Calculation 3 — Average car share of World total endpoint impact per vkm');
+title('Calculation 3 : Average car share of World total endpoint impact per vkm');
 legend(cat_names, 'Location','northwest', 'FontSize',8, 'Box','off');
 grid on; box off;
 grid on; box off;
@@ -188,7 +188,7 @@ for c = 1:n_cats
 
     page = page + 1;
     export_page(fig, output_pdf, page);
-    fprintf('Page %d — %s\n', page, cat_names{c});
+    fprintf('Page %d : %s\n', page, cat_names{c});
 
 end
 

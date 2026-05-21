@@ -86,6 +86,24 @@ for ci = 1:n_cats
     end
 end
 
+% percentage
+for ci = 1:n_cats
+    for y = 2:n_years
+        total_norm = sum(squeeze(data_norm(ci, y, :)));
+        pct_change = (total_norm - 1) * 100;
+        x_end = total_norm;
+        if pct_change >= 0
+            pct_str = sprintf('+%.0f%%', pct_change);
+        else
+            pct_str = sprintf('%.0f%%', pct_change);
+        end
+        text(ax, x_end + 0.02, y_positions(ci,y), pct_str, ...
+            'HorizontalAlignment', 'left', ...
+            'VerticalAlignment', 'middle', ...
+            'FontSize', 5.5, 'Color', [0.2 0.2 0.2]);
+    end
+end
+
 for ci = 1:n_cats-1
     sep_y = (y_positions(ci, n_years) + y_positions(ci+1, 1)) / 2;
     plot(ax, [0 3], [sep_y sep_y], '-', 'Color', [0.88 0.88 0.88], 'LineWidth', 0.5);
@@ -93,7 +111,7 @@ end
 
 cat_label_y = mean(y_positions, 2);
 for ci = 1:n_cats
-    text(ax, -0.1, cat_label_y(ci), cat_names{ci}, ...
+    text(ax, -0.2, cat_label_y(ci), cat_names{ci}, ...
         'HorizontalAlignment', 'right', ...
         'VerticalAlignment', 'middle', ...
         'FontSize', 8, 'FontWeight', 'bold');
@@ -101,7 +119,7 @@ end
 
 for ci = 1:n_cats
     for y = 1:n_years
-        text(ax, -0.02, y_positions(ci,y), year_labels{y}, ...
+        text(ax, -0.05, y_positions(ci,y), year_labels{y}, ...
             'HorizontalAlignment', 'right', ...
             'VerticalAlignment', 'middle', ...
             'FontSize', 7, 'Color', [0.45 0.45 0.45]);
@@ -114,7 +132,8 @@ set(ax, 'YTick', [], 'YDir', 'reverse', 'FontSize', 8);
 xlabel(ax, 'Normalized impact (relative to year 2000)', 'FontSize', 9);
 title(ax, 'Endpoint impacts : Norwegian new cars (2000, 2010, 2023)', ...
     'FontSize', 10, 'FontWeight', 'bold');
-xlim(ax, [-0.02 max(data_norm(:))*1.05]);
+max_val = max(arrayfun(@(ci) max(sum(squeeze(data_norm(ci,:,:)), 2)), 1:n_cats));
+xlim(ax, [-0.15 max_val * 1.15]);
 ylim(ax, [y_positions(1,1) - bar_spacing, y_positions(end,end) + bar_spacing]);
 grid(ax, 'off');
 box(ax, 'off');

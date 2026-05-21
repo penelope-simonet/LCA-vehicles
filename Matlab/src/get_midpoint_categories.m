@@ -2,7 +2,7 @@ function MidpointArray = get_midpoint_categories()
 
 
 %%
-MidpointArray(1:18) = MidpointCategories;
+MidpointArray(1:42) = MidpointCategories;
 
 c=1;
 MidpointArray(c).name = 'acidification: terrestrial';
@@ -121,6 +121,102 @@ c=c+1;
 MidpointArray(c).name = 'Human noise impacts';
 MidpointArray(c).framework = 'Cucurachi et al.';
 MidpointArray(c).unit = '';
+
+% EF v3.1 categories (
+c=c+1;
+MidpointArray(c).name = 'acidification EF'; 
+MidpointArray(c).framework = 'EF v3.1'; 
+MidpointArray(c).unit = 'mol H+-Eq';
+
+c=c+1; 
+MidpointArray(c).name = 'climate change EF'; 
+MidpointArray(c).framework = 'EF v3.1'; 
+MidpointArray(c).unit = 'kg CO2-Eq';
+
+c=c+1; 
+MidpointArray(c).name = 'climate change: biogenic EF'; 
+MidpointArray(c).framework = 'EF v3.1';
+MidpointArray(c).unit = 'kg CO2-Eq';
+
+c=c+1; 
+MidpointArray(c).name = 'climate change: fossil EF';
+MidpointArray(c).framework = 'EF v3.1'; 
+MidpointArray(c).unit = 'kg CO2-Eq';
+
+c=c+1;
+MidpointArray(c).name = 'climate change: land use and land use change EF'; 
+MidpointArray(c).framework = 'EF v3.1'; 
+MidpointArray(c).unit = 'kg CO2-Eq';
+
+c=c+1; 
+MidpointArray(c).name = 'ecotoxicity: freshwater EF'; 
+MidpointArray(c).framework = 'EF v3.1'; 
+MidpointArray(c).unit = 'CTUe';
+
+c=c+1; 
+MidpointArray(c).name = 'energy resources: non-renewable EF'; 
+MidpointArray(c).framework = 'EF v3.1'; 
+MidpointArray(c).unit = 'MJ';
+
+c=c+1; 
+MidpointArray(c).name = 'eutrophication: freshwater EF'; 
+MidpointArray(c).framework = 'EF v3.1'; 
+MidpointArray(c).unit = 'kg P-Eq';
+
+c=c+1;
+MidpointArray(c).name = 'eutrophication: marine EF'; 
+MidpointArray(c).framework = 'EF v3.1'; 
+MidpointArray(c).unit = 'kg N-Eq';
+
+c=c+1; 
+MidpointArray(c).name = 'eutrophication: terrestrial EF'; 
+MidpointArray(c).framework = 'EF v3.1'; 
+MidpointArray(c).unit = 'mol N-Eq';
+
+c=c+1;
+MidpointArray(c).name = 'human toxicity: carcinogenic EF'; 
+MidpointArray(c).framework = 'EF v3.1'; 
+MidpointArray(c).unit = 'CTUh';
+
+c=c+1;
+MidpointArray(c).name = 'human toxicity: non-carcinogenic EF'; 
+MidpointArray(c).framework = 'EF v3.1'; 
+MidpointArray(c).unit = 'CTUh';
+
+c=c+1; 
+MidpointArray(c).name = 'ionising radiation: human health EF'; 
+MidpointArray(c).framework = 'EF v3.1'; 
+MidpointArray(c).unit = 'kBq U235-Eq';
+
+c=c+1; 
+MidpointArray(c).name = 'land use EF'; 
+MidpointArray(c).framework = 'EF v3.1'; 
+MidpointArray(c).unit = 'dimensionless';
+
+c=c+1; 
+MidpointArray(c).name = 'material resources: metals/minerals EF';
+MidpointArray(c).framework = 'EF v3.1'; 
+MidpointArray(c).unit = 'kg Sb-Eq';
+
+c=c+1; 
+MidpointArray(c).name = 'ozone depletion EF'; 
+MidpointArray(c).framework = 'EF v3.1'; 
+MidpointArray(c).unit = 'kg CFC-11-Eq';
+
+c=c+1; 
+MidpointArray(c).name = 'particulate matter formation EF'; 
+MidpointArray(c).framework = 'EF v3.1'; 
+MidpointArray(c).unit = 'disease incidence';
+
+c=c+1; 
+MidpointArray(c).name = 'photochemical oxidant formation: human health EF'; 
+MidpointArray(c).framework = 'EF v3.1'; 
+MidpointArray(c).unit = 'kg NMVOC-Eq';
+
+c=c+1;
+MidpointArray(c).name = 'water use EF'; 
+MidpointArray(c).framework = 'EF v3.1'; 
+MidpointArray(c).unit = 'm3 world Eq';
 
 for i = 1:length(MidpointArray)
     MidpointArray(i).id = i;

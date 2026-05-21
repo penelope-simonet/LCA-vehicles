@@ -383,7 +383,16 @@ T_SSP2_PkBudg500_midpoint = readtable(filename);
 filename = 'input/carculator_results_SSP2-SSP2-PkBudg500_NOR_WLTC_endpoint.csv';
 T_SSP2_PkBudg500_endpoint = readtable(filename);
 
+% Dataset SSP2-NPi EF v3.1
+filename_EF = 'input/carculator_results_SSP2-SSP2-NPi_NOR_WLTC_EF_midpoint.csv';
+T_SSP2_NPi_midpoint_EF = readtable(filename_EF, 'Delimiter', ';');
 
+% Add EF suffix to impact category names
+T_SSP2_NPi_midpoint_EF{:,1} = strcat(T_SSP2_NPi_midpoint_EF{:,1}, ' EF');
+
+% Concatenate with existing midpoint table
+T_SSP2_NPi_midpoint_EF.Var8 = nan(height(T_SSP2_NPi_midpoint_EF), 1);
+T_SSP2_NPi_midpoint = [T_SSP2_NPi_midpoint; T_SSP2_NPi_midpoint_EF];
 
 %% Set up impact arrays per vehicle archetype
 for i = 1:length(OS.State)
@@ -396,7 +405,7 @@ for i = 1:length(OS.State)
 
         OS.State(i).VehicleArchetype(j).Midpoint_impacts_SSP2_PkBudg500 = get_midpoint_categories();
         OS.State(i).VehicleArchetype(j).Endpoint_impacts_SSP2_PkBudg500 = get_endpoint_categories();
-
+      
         % preallocate
         OS.State(i).VehicleArchetype(j) = OS.State(i).VehicleArchetype(j).preallocate_impact_vecs();
 

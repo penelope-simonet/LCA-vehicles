@@ -1,9 +1,9 @@
-function plot_midpoints_stacked_bars(obj)
- 
+function plot_midpoints_stacked_bars_EF(obj)
+
 years_to_plot  = [2000, 2010, 2023];
 year_labels    = {'2000', '2010', '2023'};
 n_years        = length(years_to_plot);
- 
+
 flds = {'value_glider','value_powertrain','value_energy_storage', ...
         'value_maintenance','value_EoL', ...
         'value_road','value_energy_chain','value_direct_non_exhaust','value_direct_exhaust'};
@@ -22,55 +22,59 @@ colors = [
     0    0.4471    0.7412;
     0     0     0;
 ];
- 
+
 midpoint_categories = get_midpoint_categories();
-n_cats_recipe = 23;
-cat_names = {midpoint_categories(1:n_cats_recipe).name};
- 
+ef_start = 24;
+ef_end   = length(midpoint_categories);
+n_cats_EF = ef_end - ef_start + 1;
+cat_names = {midpoint_categories(ef_start:ef_end).name};
+cat_names = strrep(cat_names, ' EF', '');
+
 years_all = [obj.State.year];
 year_indices = zeros(1, n_years);
 for y = 1:n_years
     year_indices(y) = find(years_all == years_to_plot(y));
 end
- 
+
 % collect datas
-data = zeros(n_cats_recipe, n_years, n_flds);
+data = zeros(n_cats_EF, n_years, n_flds);
 for y = 1:n_years
     state = obj.State(year_indices(y));
-    for c = 1:n_cats_recipe
+    for c = 1:n_cats_EF
+        cat_idx = ef_start + c - 1;
         for f = 1:n_flds
-            data(c, y, f) = state.Midpoint_impacts_new_cars(c).(flds{f});
+            data(c, y, f) = state.Midpoint_impacts_new_cars(cat_idx).(flds{f});
         end
     end
 end
- 
+
 % Normalise by 2000
 data_norm = zeros(size(data));
-for c = 1:n_cats_recipe
+for c = 1:n_cats_EF
     total_2000 = sum(squeeze(data(c, 1, :)));
     if total_2000 ~= 0
         data_norm(c, :, :) = data(c, :, :) / total_2000;
     end
 end
- 
+
 % size
-bar_height  = 0.12;   
-bar_spacing = 0.20;   
-group_gap   = 0.30;   
- 
-y_positions = zeros(n_cats_recipe, n_years);
-for c = 1:n_cats_recipe
+bar_height  = 0.12;
+bar_spacing = 0.20;
+group_gap   = 0.30;
+
+y_positions = zeros(n_cats_EF, n_years);
+for c = 1:n_cats_EF
     base = (c-1) * (n_years * bar_spacing + group_gap);
     for y = 1:n_years
         y_positions(c, y) = base + (y-1) * bar_spacing;
     end
 end
- 
+
 fig = figure('Visible', 'off', 'Units', 'centimeters', 'Position', [2 2 42 28]);
 ax = axes('Parent', fig, 'Position', [0.32 0.08 0.64 0.88]);
 hold(ax, 'on');
- 
-for c = 1:n_cats_recipe
+
+for c = 1:n_cats_EF
     for y = 1:n_years
         x_start = 0;
         for f = 1:n_flds
@@ -87,10 +91,10 @@ for c = 1:n_cats_recipe
         end
     end
 end
- 
+
 % percentage
-for c = 1:n_cats_recipe
-    for y = 2:n_years  % 2010, 2023
+for c = 1:n_cats_EF
+    for y = 2:n_years
         total_norm = sum(squeeze(data_norm(c, y, :)));
         pct_change = (total_norm - 1) * 100;
         x_end = total_norm;
@@ -107,21 +111,21 @@ for c = 1:n_cats_recipe
 end
 
 % separator lines between categories
-for c = 1:n_cats_recipe-1
+for c = 1:n_cats_EF-1
     sep_y = (y_positions(c, n_years) + y_positions(c+1, 1)) / 2;
     plot(ax, [0 3], [sep_y sep_y], '-', 'Color', [0.88 0.88 0.88], 'LineWidth', 0.5);
 end
- 
+
 % labels
 cat_label_y = mean(y_positions, 2);
-for c = 1:n_cats_recipe
+for c = 1:n_cats_EF
     text(ax, -0.3, cat_label_y(c), cat_names{c}, ...
         'HorizontalAlignment', 'right', ...
         'VerticalAlignment', 'middle', ...
         'FontSize', 7, 'FontWeight', 'bold');
 end
- 
-for c = 1:n_cats_recipe
+
+for c = 1:n_cats_EF
     for y = 1:n_years
         text(ax, -0.1, y_positions(c,y), year_labels{y}, ...
             'HorizontalAlignment', 'right', ...
@@ -129,20 +133,20 @@ for c = 1:n_cats_recipe
             'FontSize', 6, 'Color', [0.45 0.45 0.45]);
     end
 end
- 
+
 % line x=1
 xline(ax, 1, '--', 'Color', [0.3 0.3 0.3], 'LineWidth', 1.0);
- 
+
 set(ax, 'YTick', [], 'YDir', 'reverse', 'FontSize', 8);
 xlabel(ax, 'Normalized impact (relative to year 2000)', 'FontSize', 9);
-title(ax, 'Midpoint impacts ReCiPe2016 : Norwegian new cars (2000, 2010, 2023)', ...
+title(ax, 'Midpoint impacts EF v3.1 : Norwegian new cars (2000, 2010, 2023)', ...
     'FontSize', 10, 'FontWeight', 'bold');
-max_val = max(arrayfun(@(c) max(sum(squeeze(data_norm(c,:,:)), 2)), 1:n_cats_recipe));
+max_val = max(arrayfun(@(c) max(sum(squeeze(data_norm(c,:,:)), 2)), 1:n_cats_EF));
 xlim(ax, [-0.015 max_val * 1.15]);
 ylim(ax, [y_positions(1,1) - bar_spacing, y_positions(end,end) + bar_spacing]);
 grid(ax, 'off');
 box(ax, 'off');
- 
+
 % legend
 h = zeros(1, n_flds);
 for f = 1:n_flds
@@ -153,17 +157,17 @@ legend(ax, h, contributor_labels, ...
     'Orientation', 'horizontal', ...
     'FontSize', 7, 'Box', 'off', ...
     'NumColumns', 5);
- 
+
 % PDF
 base_path  = fileparts(fileparts(fileparts(mfilename('fullpath'))));
 output_dir = fullfile(base_path, 'Output');
 if ~exist(output_dir, 'dir'), mkdir(output_dir); end
-output_pdf = fullfile(output_dir, 'comparison_2000_2010_2023_midpoints_stacked_bars.pdf');
+output_pdf = fullfile(output_dir, 'comparison_2000_2010_2023_stacked_bars_EF.pdf');
 
 set(fig, 'PaperUnits', 'centimeters');
 set(fig, 'PaperSize', [42 28]);
 
-drawnow;  
+drawnow;
 exportgraphics(fig, output_pdf, 'ContentType', 'vector');
 fprintf('PDF saved: %s\n', output_pdf);
 

@@ -123,7 +123,7 @@ end
  
 for c = 1:n_cats_recipe
     for y = 1:n_years
-        text(ax, -0.1, y_positions(c,y), year_labels{y}, ...
+        text(ax, -0.2, y_positions(c,y), year_labels{y}, ...
             'HorizontalAlignment', 'right', ...
             'VerticalAlignment', 'middle', ...
             'FontSize', 6, 'Color', [0.45 0.45 0.45]);
@@ -138,7 +138,7 @@ xlabel(ax, 'Normalized impact (relative to year 2000)', 'FontSize', 9);
 title(ax, 'Midpoint impacts ReCiPe2016 : Norwegian new cars (2000, 2010, 2023)', ...
     'FontSize', 10, 'FontWeight', 'bold');
 max_val = max(arrayfun(@(c) max(sum(squeeze(data_norm(c,:,:)), 2)), 1:n_cats_recipe));
-xlim(ax, [-0.015 max_val * 1.15]);
+xlim(ax, [-0.15 max_val * 1.15]);
 ylim(ax, [y_positions(1,1) - bar_spacing, y_positions(end,end) + bar_spacing]);
 grid(ax, 'off');
 box(ax, 'off');

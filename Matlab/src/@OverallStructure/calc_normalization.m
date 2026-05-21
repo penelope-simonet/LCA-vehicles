@@ -5,25 +5,32 @@ function obj = calc_normalization(obj)
 % Calculation 3 : Share of the average car in the fleet per vehicle-kilometre
 % Calculation 4 : Absolute flows: embodied vs operational (23 categories)
 %
-% Embodied    = value_glider + value_powertrain + value_energy_storage
-% Operational = value_direct_exhaust
-%
 % Calculation unit for the entire fleet: X kg/year
 % Calculation unit per car: X kg/year (based on 12,000 vehicle-kilometres)
 
 vkm_per_year = 12000;
+lifetime_km = 200000;
 
 NormFactors = get_normalization_factors_ReCiPe();
-n_cats = length(obj.State(1).Midpoint_impacts);
+n_cats = 23;
 
 for i = 1:numel(obj.State)
 
     state = obj.State(i);
 
-    % Total number of cars
+    % Total number of cars (for operational)
     n_cars_total = 0;
     for at = 1:numel(state.VehicleArchetype)
         n_cars_total = n_cars_total + sum(state.VehicleArchetype(at).number_of_cars_from_year);
+    end
+    
+    % New cars this year only (for embodied)
+    n_new_cars_this_year = 0;
+    for at = 1:numel(state.VehicleArchetype)
+        year_idx = find(state.VehicleArchetype(at).year_cars_produced == state.year, 1);
+        if ~isempty(year_idx)
+            n_new_cars_this_year = n_new_cars_this_year + state.VehicleArchetype(at).number_of_cars_from_year(year_idx);
+        end
     end
 
     for cat = 1:n_cats
@@ -81,12 +88,11 @@ for i = 1:numel(obj.State)
         embodied_fleet = ( ...
             state.Midpoint_impacts(cat).value_glider + ...
             state.Midpoint_impacts(cat).value_powertrain + ...
-            state.Midpoint_impacts(cat).value_energy_storage) * vkm_per_year * n_cars_total;
+            state.Midpoint_impacts(cat).value_energy_storage) * lifetime_km * vkm_per_year * n_cars_total;
 
         operational_fleet = (state.Midpoint_impacts(cat).value_direct_exhaust + ...
                      state.Midpoint_impacts(cat).value_energy_chain + ...
-                     state.Midpoint_impacts(cat).value_direct_non_exhaust + ...
-                     state.Midpoint_impacts_new_cars(cat).value_maintenance) * n_cars_total * vkm_per_year;
+                     state.Midpoint_impacts(cat).value_direct_non_exhaust) * n_cars_total * vkm_per_year;
 
         obj.State(i).Normalization.embodied_fleet(cat)    = embodied_fleet;
         obj.State(i).Normalization.operational_fleet(cat) = operational_fleet;
@@ -100,8 +106,7 @@ for i = 1:numel(obj.State)
 
         operational_new = (state.Midpoint_impacts_new_cars(cat).value_direct_exhaust + ...
                    state.Midpoint_impacts_new_cars(cat).value_energy_chain + ...
-                   state.Midpoint_impacts_new_cars(cat).value_direct_non_exhaust + ...
-                   state.Midpoint_impacts_new_cars(cat).value_maintenance) * vkm_per_year;
+                   state.Midpoint_impacts_new_cars(cat).value_direct_non_exhaust) * vkm_per_year;
 
         obj.State(i).Normalization.embodied_new_cars(cat)    = embodied_new;
         obj.State(i).Normalization.operational_new_cars(cat) = operational_new;
@@ -115,8 +120,7 @@ for i = 1:numel(obj.State)
 
        operational_avg = (state.Midpoint_impacts(cat).value_direct_exhaust + ...
                    state.Midpoint_impacts(cat).value_energy_chain + ...
-                   state.Midpoint_impacts(cat).value_direct_non_exhaust + ...
-                   state.Midpoint_impacts_new_cars(cat).value_maintenance) * vkm_per_year;
+                   state.Midpoint_impacts(cat).value_direct_non_exhaust) * vkm_per_year;
 
         obj.State(i).Normalization.embodied_avg_car(cat)    = embodied_avg;
         obj.State(i).Normalization.operational_avg_car(cat) = operational_avg;
