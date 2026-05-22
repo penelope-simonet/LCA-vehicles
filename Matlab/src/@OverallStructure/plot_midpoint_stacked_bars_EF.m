@@ -27,8 +27,13 @@ midpoint_categories = get_midpoint_categories();
 ef_start = 24;
 ef_end   = length(midpoint_categories);
 n_cats_EF = ef_end - ef_start + 1;
-cat_names = {midpoint_categories(ef_start:ef_end).name};
-cat_names = strrep(cat_names, ' EF', '');
+cat_names_all = {midpoint_categories(ef_start:ef_end).name};
+cat_names_all = strrep(cat_names_all, ' EF', '');
+
+ef_cats_to_exclude = [3, 4, 5];
+cats_to_plot = setdiff(1:n_cats_EF, ef_cats_to_exclude);
+n_cats_plot  = length(cats_to_plot);
+cat_names    = cat_names_all(cats_to_plot);
 
 years_all = [obj.State.year];
 year_indices = zeros(1, n_years);
@@ -37,11 +42,11 @@ for y = 1:n_years
 end
 
 % collect datas
-data = zeros(n_cats_EF, n_years, n_flds);
+data = zeros(n_cats_plot, n_years, n_flds);
 for y = 1:n_years
     state = obj.State(year_indices(y));
-    for c = 1:n_cats_EF
-        cat_idx = ef_start + c - 1;
+    for c = 1:n_cats_plot
+        cat_idx = ef_start + cats_to_plot(c) - 1;
         for f = 1:n_flds
             data(c, y, f) = state.Midpoint_impacts_new_cars(cat_idx).(flds{f});
         end
@@ -50,7 +55,7 @@ end
 
 % Normalise by 2000
 data_norm = zeros(size(data));
-for c = 1:n_cats_EF
+for c = 1:n_cats_plot
     total_2000 = sum(squeeze(data(c, 1, :)));
     if total_2000 ~= 0
         data_norm(c, :, :) = data(c, :, :) / total_2000;
@@ -62,8 +67,8 @@ bar_height  = 0.12;
 bar_spacing = 0.20;
 group_gap   = 0.30;
 
-y_positions = zeros(n_cats_EF, n_years);
-for c = 1:n_cats_EF
+y_positions = zeros(n_cats_plot, n_years);
+for c = 1:n_cats_plot
     base = (c-1) * (n_years * bar_spacing + group_gap);
     for y = 1:n_years
         y_positions(c, y) = base + (y-1) * bar_spacing;
@@ -74,7 +79,7 @@ fig = figure('Visible', 'off', 'Units', 'centimeters', 'Position', [2 2 42 28]);
 ax = axes('Parent', fig, 'Position', [0.32 0.08 0.64 0.88]);
 hold(ax, 'on');
 
-for c = 1:n_cats_EF
+for c = 1:n_cats_plot
     for y = 1:n_years
         x_start = 0;
         for f = 1:n_flds
@@ -93,7 +98,7 @@ for c = 1:n_cats_EF
 end
 
 % percentage
-for c = 1:n_cats_EF
+for c = 1:n_cats_plot
     for y = 2:n_years
         total_norm = sum(squeeze(data_norm(c, y, :)));
         pct_change = (total_norm - 1) * 100;
@@ -111,21 +116,21 @@ for c = 1:n_cats_EF
 end
 
 % separator lines between categories
-for c = 1:n_cats_EF-1
+for c = 1:n_cats_plot-1
     sep_y = (y_positions(c, n_years) + y_positions(c+1, 1)) / 2;
     plot(ax, [0 3], [sep_y sep_y], '-', 'Color', [0.88 0.88 0.88], 'LineWidth', 0.5);
 end
 
 % labels
 cat_label_y = mean(y_positions, 2);
-for c = 1:n_cats_EF
+for c = 1:n_cats_plot
     text(ax, -0.3, cat_label_y(c), cat_names{c}, ...
         'HorizontalAlignment', 'right', ...
         'VerticalAlignment', 'middle', ...
         'FontSize', 7, 'FontWeight', 'bold');
 end
 
-for c = 1:n_cats_EF
+for c = 1:n_cats_plot
     for y = 1:n_years
         text(ax, -0.1, y_positions(c,y), year_labels{y}, ...
             'HorizontalAlignment', 'right', ...
@@ -141,7 +146,7 @@ set(ax, 'YTick', [], 'YDir', 'reverse', 'FontSize', 8);
 xlabel(ax, 'Normalized impact (relative to year 2000)', 'FontSize', 9);
 title(ax, 'Midpoint impacts EF v3.1 : Norwegian new cars (2000, 2010, 2023)', ...
     'FontSize', 10, 'FontWeight', 'bold');
-max_val = max(arrayfun(@(c) max(sum(squeeze(data_norm(c,:,:)), 2)), 1:n_cats_EF));
+max_val = max(arrayfun(@(c) max(sum(squeeze(data_norm(c,:,:)), 2)), 1:n_cats_plot));
 xlim(ax, [-0.015 max_val * 1.15]);
 ylim(ax, [y_positions(1,1) - bar_spacing, y_positions(end,end) + bar_spacing]);
 grid(ax, 'off');
@@ -169,6 +174,19 @@ set(fig, 'PaperSize', [42 28]);
 
 drawnow;
 exportgraphics(fig, output_pdf, 'ContentType', 'vector');
+
+%% Export source data to Excel
+output_xlsx = fullfile(output_dir, 'source_data_stacked_bars_EF.xlsx');
+if exist(output_xlsx, 'file'), delete(output_xlsx); end
+
+header = [{'Category'}, contributor_labels];
+for y = 1:n_years
+    data_out = [cat_names', num2cell(squeeze(data_norm(:, y, :)))];
+    writecell([header; data_out], output_xlsx, 'Sheet', year_labels{y});
+end
+
+fprintf('Excel saved: %s\n', output_xlsx);
+
 fprintf('PDF saved: %s\n', output_pdf);
 
 end

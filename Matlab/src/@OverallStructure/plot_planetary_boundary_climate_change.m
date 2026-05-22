@@ -82,6 +82,18 @@ output_pdf = fullfile(output_dir, 'planetary_boundary_climate_change.pdf');
 
 drawnow;
 exportgraphics(fig, output_pdf, 'ContentType', 'vector');
+
+%% Export source data to Excel
+output_xlsx = fullfile(output_dir, 'source_data_planetary_boundary_climate_change.xlsx');
+if exist(output_xlsx, 'file'), delete(output_xlsx); end
+
+header = [{'Year'}, {'Embodied'}, {'Operational'}, {'Infrastructure'}, {'Total'}, {'PB_norway_kgCO2eq'}];
+data_out = [num2cell(years'), num2cell(embodied'), num2cell(operational'), ...
+            num2cell(infra'), num2cell(total'), num2cell(repmat(PB_norway, n_years, 1))];
+writecell([header; data_out], output_xlsx, 'Sheet', 'climate_change');
+
+fprintf('Excel saved: %s\n', output_xlsx);
+
 fprintf('PDF saved: %s\n', output_pdf);
 
 end

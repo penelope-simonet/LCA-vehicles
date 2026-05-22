@@ -36,7 +36,7 @@ for i = 1:n_years
     infra_share(i) = infra / PB_norway;
 end
 
-total = embodied + operational;
+total = embodied + operational + infra_share;
 
 fig = figure('Visible', 'off', 'Units', 'centimeters', 'Position', [2 2 30 16]);
 ax = axes(fig);
@@ -78,6 +78,17 @@ output_pdf = fullfile(output_dir, 'planetary_boundary_ecosystem_quality.pdf');
 
 drawnow;
 exportgraphics(fig, output_pdf, 'ContentType', 'vector');
+%% Export source data to Excel
+output_xlsx = fullfile(output_dir, 'source_data_planetary_boundary_ecosystem_quality.xlsx');
+if exist(output_xlsx, 'file'), delete(output_xlsx); end
+
+header = [{'Year'}, {'Embodied'}, {'Operational'}, {'Infrastructure'}, {'Total'}, {'PB_norway_species_yr'}];
+data_out = [num2cell(years'), num2cell(embodied'), num2cell(operational'), ...
+            num2cell(infra_share'), num2cell(total'), ...
+            num2cell(repmat(PB_norway, n_years, 1))];
+writecell([header; data_out], output_xlsx, 'Sheet', 'ecosystem_quality');
+
+fprintf('Excel saved: %s\n', output_xlsx);
 fprintf('PDF saved: %s\n', output_pdf);
 
 end

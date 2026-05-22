@@ -155,6 +155,19 @@ output_pdf = fullfile(output_dir, 'comparison_2000_2010_2023_endpoints_stacked_b
 
 drawnow;
 exportgraphics(fig, output_pdf, 'ContentType', 'vector');
+
+%% Export source data to Excel
+output_xlsx = fullfile(output_dir, 'source_data_stacked_bars_endpoints.xlsx');
+if exist(output_xlsx, 'file'), delete(output_xlsx); end
+
+header = [{'Category'}, contributor_labels];
+for y = 1:n_years
+    data_out = [cat_names', num2cell(squeeze(data_norm(:, y, :)))];
+    writecell([header; data_out], output_xlsx, 'Sheet', year_labels{y});
+end
+
+fprintf('Excel saved: %s\n', output_xlsx);
+
 fprintf('PDF saved: %s\n', output_pdf);
 
 end

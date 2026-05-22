@@ -270,6 +270,35 @@ for cat = 1:n_cats
 
 end
 
+%% Export source data to Excel
+output_xlsx = fullfile(output_dir, 'source_data_normalization_midpoints.xlsx');
+if exist(output_xlsx, 'file'), delete(output_xlsx); end
+
+cat_names_incl = cat_names(1:n_cats);
+header = [{'Category'}, num2cell(years)];
+
+% Sheet 1 : fleet_share_World
+data_out = [cat_names_incl', num2cell(fleet_World)];
+writecell([header; data_out], output_xlsx, 'Sheet', 'fleet_share_World');
+
+% Sheet 2 : new_cars_share_World
+data_out = [cat_names_incl', num2cell(new_World)];
+writecell([header; data_out], output_xlsx, 'Sheet', 'new_cars_share_World');
+
+% Sheet 3 : avg_car_share_World
+data_out = [cat_names_incl', num2cell(avg_World)];
+writecell([header; data_out], output_xlsx, 'Sheet', 'avg_car_share_World');
+
+% Sheet 4 : embodied_fleet
+data_out = [cat_names_incl', num2cell(embodied_fleet)];
+writecell([header; data_out], output_xlsx, 'Sheet', 'embodied_fleet');
+
+% Sheet 5 : operational_fleet
+data_out = [cat_names_incl', num2cell(operational_fleet)];
+writecell([header; data_out], output_xlsx, 'Sheet', 'operational_fleet');
+
+fprintf('Excel saved: %s\n', output_xlsx);
+
 fprintf('\nDone! PDF: %s\n', output_pdf);
 
 end

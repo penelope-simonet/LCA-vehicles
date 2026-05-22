@@ -168,6 +168,40 @@ for i = 1:length(endpoint_ids_to_plot)
 
 end
 
+%% Export source data to Excel
+output_xlsx = 'Output/source_data_internal_normalization_endpoints.xlsx';
+if exist(output_xlsx, 'file'), delete(output_xlsx); end
+
+header_norm = {'Year', 'Ecosystem_quality', 'Human_health', 'Natural_resources'};
+
+% Vehicle stock — normalized
+data_out = [num2cell(years'), num2cell(data_raw(1,:)'/data_raw(1,1)), ...
+            num2cell(data_raw(2,:)'/data_raw(2,1)), num2cell(data_raw(3,:)'/data_raw(3,1))];
+writecell([header_norm; data_out], output_xlsx, 'Sheet', 'norm_vehicle_stock');
+
+% New cars — normalized
+data_out = [num2cell(years'), num2cell(data_raw_new_cars(1,:)'/data_raw_new_cars(1,1)), ...
+            num2cell(data_raw_new_cars(2,:)'/data_raw_new_cars(2,1)), num2cell(data_raw_new_cars(3,:)'/data_raw_new_cars(3,1))];
+writecell([header_norm; data_out], output_xlsx, 'Sheet', 'norm_new_cars');
+
+header_comp = [{'Year'}, legend_array];
+for i = 1:length(endpoint_ids_to_plot)
+    plotMatrix_exp = zeros(length(years), length(flds));
+    plotMatrix_nc_exp = zeros(length(years), length(flds));
+    for j = 1:length(flds)
+        for k = 1:length(years)
+            plotMatrix_exp(k,j)    = data_raw_components(i,k,j);
+            plotMatrix_nc_exp(k,j) = data_raw_components_new_cars(i,k,j);
+        end
+    end
+    writecell([header_comp; [num2cell(years'), num2cell(plotMatrix_exp)]], ...
+        output_xlsx, 'Sheet', [endpoint_names_out{i} '_stock']);
+    writecell([header_comp; [num2cell(years'), num2cell(plotMatrix_nc_exp)]], ...
+        output_xlsx, 'Sheet', [endpoint_names_out{i} '_new_cars']);
+end
+
+fprintf('Excel saved: %s\n', output_xlsx);
+
 
 end
 

@@ -113,6 +113,46 @@ for cat = 1:n_cats
  
 end % for cat
  
+%% Export source data to Excel
+output_xlsx = 'Output/source_data_internal_normalization_midpoints.xlsx';
+if exist(output_xlsx, 'file'), delete(output_xlsx); end
+
+for cat = 1:n_cats
+    cat_name_clean = strrep(midpoint_categories(cat).name, ':', '-');
+    cat_name_clean = strrep(cat_name_clean, '/', '-');
+    cat_id = midpoint_categories(cat).id;
+
+    data_raw_exp          = zeros(length(years), 1);
+    data_raw_new_cars_exp = zeros(length(years), 1);
+    norm_exp              = zeros(length(years), 1);
+    norm_new_cars_exp     = zeros(length(years), 1);
+    components_exp        = zeros(length(years), length(flds));
+    components_nc_exp     = zeros(length(years), length(flds));
+
+    for i = 1:length(obj.State)
+        data_raw_exp(i)          = obj.State(i).Midpoint_impacts(cat_id).value;
+        data_raw_new_cars_exp(i) = obj.State(i).Midpoint_impacts_new_cars(cat_id).value;
+        for k = 1:length(flds)
+            components_exp(i,k)    = obj.State(i).Midpoint_impacts(cat_id).(flds{k});
+            components_nc_exp(i,k) = obj.State(i).Midpoint_impacts_new_cars(cat_id).(flds{k});
+        end
+    end
+
+    if data_raw_exp(1) ~= 0
+        norm_exp = data_raw_exp / data_raw_exp(1);
+    end
+    if data_raw_new_cars_exp(1) ~= 0
+        norm_new_cars_exp = data_raw_new_cars_exp / data_raw_new_cars_exp(1);
+    end
+
+    header_norm = {'Year', 'Raw_vehicle_stock', 'Norm_vehicle_stock', 'Raw_new_cars', 'Norm_new_cars'};
+    data_norm_out = [num2cell(years'), num2cell(data_raw_exp), num2cell(norm_exp), ...
+                     num2cell(data_raw_new_cars_exp), num2cell(norm_new_cars_exp)];
+    writecell([header_norm; data_norm_out], output_xlsx, 'Sheet', cat_name_clean(1:min(end,31)));
+end
+
+fprintf('Excel saved: %s\n', output_xlsx);
+
 fprintf('Done! All midpoint plots saved in: %s\n', output_pdf);
  
 end

@@ -63,7 +63,7 @@ n_axes = n_cats;
 angles = linspace(0, 2*pi, n_axes + 1);
 angles = angles(1:end-1);
 
-figure('Units', 'normalized', 'Position', [0.05 0.05 0.80 0.88]);
+fig = figure('Visible', 'off', 'Units', 'centimeters', 'Position', [2 2 30 25]);
 
 % margins
 ax = axes('Position', [0.18 0.18 0.64 0.62]);
@@ -155,5 +155,34 @@ legend(ax, h, ...
 title(ax, 'Midpoint impacts : Norwegian new cars (normalized)', ...
     'FontSize', 13, 'FontWeight', 'bold', 'Units', 'normalized', ...
     'Position', [0.5, 1.12, 0]);
+
+base_path  = fileparts(fileparts(fileparts(mfilename('fullpath'))));
+output_dir = fullfile(base_path, 'Output');
+if ~exist(output_dir, 'dir'), mkdir(output_dir); end
+output_pdf = fullfile(output_dir, 'spider_new_cars.pdf');
+set(fig, 'PaperUnits', 'centimeters');
+set(fig, 'PaperSize', [30 25]);
+drawnow;
+exportgraphics(fig, output_pdf, 'ContentType', 'vector');
+fprintf('PDF saved: %s\n', output_pdf);
+
+%% Export source data to Excel
+output_xlsx = fullfile(output_dir, 'source_data_spider_new_cars.xlsx');
+if exist(output_xlsx, 'file'), delete(output_xlsx); end
+
+header = [{'Category'}, num2cell(years_to_plot)];
+data_raw_out = cell(n_cats, n_years + 1);
+data_norm_out = cell(n_cats, n_years + 1);
+for c = 1:n_cats
+    data_raw_out{c,1}  = cat_labels{c};
+    data_norm_out{c,1} = cat_labels{c};
+    for y = 1:n_years
+        data_raw_out{c,y+1}  = data(y,c);
+        data_norm_out{c,y+1} = data_norm(y,c);
+    end
+end
+writecell([header; data_raw_out],  output_xlsx, 'Sheet', 'raw_values');
+writecell([header; data_norm_out], output_xlsx, 'Sheet', 'normalized_values');
+fprintf('Excel saved: %s\n', output_xlsx);
 
 end
