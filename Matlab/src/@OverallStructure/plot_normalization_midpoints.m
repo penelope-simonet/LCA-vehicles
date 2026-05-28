@@ -271,7 +271,9 @@ for cat = 1:n_cats
 end
 
 %% Export source data to Excel
-output_xlsx = fullfile(output_dir, 'source_data_normalization_midpoints.xlsx');
+source_dir = fullfile(output_dir, 'Source_data');
+if ~exist(source_dir, 'dir'), mkdir(source_dir); end
+output_xlsx = fullfile(source_dir, 'normalization_midpoints.xlsx');
 if exist(output_xlsx, 'file'), delete(output_xlsx); end
 
 cat_names_incl = cat_names(1:n_cats);

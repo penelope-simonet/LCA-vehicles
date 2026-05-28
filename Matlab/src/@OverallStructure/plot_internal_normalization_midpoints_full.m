@@ -114,7 +114,12 @@ for cat = 1:n_cats
 end % for cat
  
 %% Export source data to Excel
-output_xlsx = 'Output/source_data_internal_normalization_midpoints.xlsx';
+base_path  = fileparts(fileparts(fileparts(mfilename('fullpath'))));
+output_dir = fullfile(base_path, 'Output');
+
+source_dir = fullfile(output_dir, 'Source_data');
+if ~exist(source_dir, 'dir'), mkdir(source_dir); end
+output_xlsx = fullfile(source_dir, 'internal_normalization_midpoints.xlsx');
 if exist(output_xlsx, 'file'), delete(output_xlsx); end
 
 for cat = 1:n_cats

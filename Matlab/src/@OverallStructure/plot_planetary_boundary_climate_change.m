@@ -12,6 +12,7 @@ pop_norway = 5400000;
 PB_norway  = PB_global * (pop_norway / pop_ref);
 
 vkm_per_year = 12000;
+lifetime_km = 200000;
 years    = [obj.State.year];
 n_years  = length(years);
 
@@ -25,11 +26,19 @@ for i = 1:n_years
     for at = 1:numel(state.VehicleArchetype)
         n_cars = n_cars + sum(state.VehicleArchetype(at).number_of_cars_from_year);
     end
+   
+n_new_cars_this_year = 0;
+for at = 1:numel(state.VehicleArchetype)
+    year_idx = find(state.VehicleArchetype(at).year_cars_produced == state.year, 1);
+    if ~isempty(year_idx)
+        n_new_cars_this_year = n_new_cars_this_year + state.VehicleArchetype(at).number_of_cars_from_year(year_idx);
+    end
+end
 
     emb = (state.Midpoint_impacts(2).value_glider + ...
            state.Midpoint_impacts(2).value_powertrain + ...
-           state.Midpoint_impacts(2).value_energy_storage) * n_cars * vkm_per_year;
-
+           state.Midpoint_impacts(2).value_energy_storage) * lifetime_km * n_new_cars_this_year;
+    
     ops = (state.Midpoint_impacts(2).value_direct_exhaust + ...
            state.Midpoint_impacts(2).value_energy_chain + ...
            state.Midpoint_impacts(2).value_direct_non_exhaust) * n_cars * vkm_per_year;
@@ -84,7 +93,12 @@ drawnow;
 exportgraphics(fig, output_pdf, 'ContentType', 'vector');
 
 %% Export source data to Excel
-output_xlsx = fullfile(output_dir, 'source_data_planetary_boundary_climate_change.xlsx');
+base_path  = fileparts(fileparts(fileparts(mfilename('fullpath'))));
+output_dir = fullfile(base_path, 'Output');
+
+source_dir = fullfile(output_dir, 'Source_data');
+if ~exist(source_dir, 'dir'), mkdir(source_dir); end
+output_xlsx = fullfile(source_dir, 'planetary_boundary_climate_change.xlsx');
 if exist(output_xlsx, 'file'), delete(output_xlsx); end
 
 header = [{'Year'}, {'Embodied'}, {'Operational'}, {'Infrastructure'}, {'Total'}, {'PB_norway_kgCO2eq'}];

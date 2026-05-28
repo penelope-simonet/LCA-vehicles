@@ -176,7 +176,12 @@ drawnow;
 exportgraphics(fig, output_pdf, 'ContentType', 'vector');
 
 %% Export source data to Excel
-output_xlsx = fullfile(output_dir, 'source_data_stacked_bars_EF.xlsx');
+base_path  = fileparts(fileparts(fileparts(mfilename('fullpath'))));
+output_dir = fullfile(base_path, 'Output');
+
+source_dir = fullfile(output_dir, 'Source_data');
+if ~exist(source_dir, 'dir'), mkdir(source_dir); end
+output_xlsx = fullfile(source_dir, 'stacked_bars_EF.xlsx');
 if exist(output_xlsx, 'file'), delete(output_xlsx); end
 
 header = [{'Category'}, contributor_labels];

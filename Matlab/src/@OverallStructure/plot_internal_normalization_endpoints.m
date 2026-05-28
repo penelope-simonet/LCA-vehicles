@@ -6,9 +6,16 @@ units = {'species year vkm^{-1}', 'DALY vkm^{-1}', 'USD2013 vkm^{-1}'};
 
 years = [obj.State.year];
 
-data_raw = zeros(length(endpoint_ids_to_plot),  length(years));
+% Define output directories
+base_path  = fileparts(fileparts(fileparts(mfilename('fullpath'))));
+output_dir = fullfile(base_path, 'Output');
+pdf_dir = fullfile(output_dir, 'internal_norm_endpoints', 'PDF');
+mat_dir = fullfile(output_dir, 'internal_norm_endpoints', 'MAT');
+if ~exist(pdf_dir, 'dir'), mkdir(pdf_dir); end
+if ~exist(mat_dir, 'dir'), mkdir(mat_dir); end
 
-plot_matrix = zeros(length(endpoint_ids_to_plot),  length(years));
+data_raw = zeros(length(endpoint_ids_to_plot), length(years));
+plot_matrix = zeros(length(endpoint_ids_to_plot), length(years));
 
 for i = 1:length(obj.State)
     for j = 1:length(endpoint_ids_to_plot)
@@ -22,31 +29,25 @@ for i = 1:length(years)
     end
 end
 
-
 figure
 plot(years,plot_matrix(1,:), 'LineWidth', 2.5);
 hold on
 plot(years,plot_matrix(2,:), 'LineWidth', 2.5);
 plot(years,plot_matrix(3,:), 'LineWidth', 2.5);
-
 legend(endpoint_names)
-
 xlabel('Year')
 ylabel('Internal normalization')
-
 title('Endpoint impacts per vkm')
-
 ylim([0.5 1.5])
 
-filename = 'Output/endpoints_internal_normalization_vehicle_stock.pdf';
+filename = fullfile(pdf_dir, 'endpoints_internal_normalization_vehicle_stock.pdf');
 print('-vector','-dpdf', '-r1000', filename)
-save('Output/endpoints_internal_normalization_vehicle_stock.mat', 'plot_matrix', 'years', 'endpoint_names' );
+save(fullfile(mat_dir, 'endpoints_internal_normalization_vehicle_stock.mat'), 'plot_matrix', 'years', 'endpoint_names');
 
 %% NEW CARS
 
-data_raw_new_cars = zeros(length(endpoint_ids_to_plot),  length(years));
-
-plot_matrix = zeros(length(endpoint_ids_to_plot),  length(years));
+data_raw_new_cars = zeros(length(endpoint_ids_to_plot), length(years));
+plot_matrix = zeros(length(endpoint_ids_to_plot), length(years));
 
 for i = 1:length(obj.State)
     for j = 1:length(endpoint_ids_to_plot)
@@ -60,27 +61,20 @@ for i = 1:length(years)
     end
 end
 
-
 figure
 plot(years,plot_matrix(1,:), 'LineWidth', 2.5);
 hold on
 plot(years,plot_matrix(2,:), 'LineWidth', 2.5);
 plot(years,plot_matrix(3,:), 'LineWidth', 2.5);
-
 legend(endpoint_names)
-
 xlabel('Year')
 ylabel('Internal normalization')
-
 title('Endpoint impacts per vkm')
-
 ylim([0.5 1.5])
 
-filename = 'Output/endpoints_internal_normalization_new_vehicles.pdf';
+filename = fullfile(pdf_dir, 'endpoints_internal_normalization_new_vehicles.pdf');
 print('-vector','-dpdf', '-r1000', filename)
-save('Output/endpoints_internal_normalization_new_vehicles.mat', 'plot_matrix', 'years', 'endpoint_names' );
-
-
+save(fullfile(mat_dir, 'endpoints_internal_normalization_new_vehicles.mat'), 'plot_matrix', 'years', 'endpoint_names');
 
 %% NEXT
 
@@ -120,8 +114,6 @@ for i = 1:length(endpoint_ids_to_plot)
         end
     end
 
-    
-
     figure
     clrs = turbo(9);
     colororder(clrs);
@@ -129,21 +121,13 @@ for i = 1:length(endpoint_ids_to_plot)
     ylabel(units{i});
     xlabel('Year');
     title([endpoint_names{i}]);
-
-    %legend(legend_array, 'Location', 'eastoutside')
-
     ylim([0 ylimmax(i)])
 
-    filename = ['Output/endpoints_' endpoint_names_out{i} '_vehicle_stock.pdf'];
-    
-    if exist(filename, 'file')
-        delete(filename)
-    end
-
+    filename = fullfile(pdf_dir, ['endpoints_' endpoint_names_out{i} '_vehicle_stock.pdf']);
+    if exist(filename, 'file'), delete(filename); end
     print('-vector','-dpdf', '-r1000', filename)
-    save(['Output/endpoints_' endpoint_names_out{i} '_vehicle_stock.mat'], 'plotMatrix', 'years', 'flds');
+    save(fullfile(mat_dir, ['endpoints_' endpoint_names_out{i} '_vehicle_stock.mat']), 'plotMatrix', 'years', 'flds');
 
-    
     figure
     clrs = turbo(9);
     colororder(clrs);
@@ -151,35 +135,27 @@ for i = 1:length(endpoint_ids_to_plot)
     ylabel(units{i});
     xlabel('Year');
     title(['New cars - ' endpoint_names_out{i}]);
-
-    %legend(legend_array, 'Location', 'eastoutside')
-
     ylim([0 ylimmax(i)])
-    
 
-    filename = ['Output/endpoints_' endpoint_names_out{i} '_new_vehicles.pdf'];
-
-    if exist(filename, 'file')
-        delete(filename)
-    end
-
+    filename = fullfile(pdf_dir, ['endpoints_' endpoint_names_out{i} '_new_vehicles.pdf']);
+    if exist(filename, 'file'), delete(filename); end
     print('-vector','-dpdf', '-r1000', filename)
-    save(['Output/endpoints_' endpoint_names_out{i} '_new_vehicles.mat'], 'plotMatrix', 'years', 'flds');
+    save(fullfile(mat_dir, ['endpoints_' endpoint_names_out{i} '_new_vehicles.mat']), 'plotMatrix', 'years', 'flds');
 
 end
 
 %% Export source data to Excel
-output_xlsx = 'Output/source_data_internal_normalization_endpoints.xlsx';
+source_dir = fullfile(output_dir, 'Source_data');
+if ~exist(source_dir, 'dir'), mkdir(source_dir); end
+output_xlsx = fullfile(source_dir, 'internal_normalization_endpoints.xlsx');
 if exist(output_xlsx, 'file'), delete(output_xlsx); end
 
 header_norm = {'Year', 'Ecosystem_quality', 'Human_health', 'Natural_resources'};
 
-% Vehicle stock — normalized
 data_out = [num2cell(years'), num2cell(data_raw(1,:)'/data_raw(1,1)), ...
             num2cell(data_raw(2,:)'/data_raw(2,1)), num2cell(data_raw(3,:)'/data_raw(3,1))];
 writecell([header_norm; data_out], output_xlsx, 'Sheet', 'norm_vehicle_stock');
 
-% New cars — normalized
 data_out = [num2cell(years'), num2cell(data_raw_new_cars(1,:)'/data_raw_new_cars(1,1)), ...
             num2cell(data_raw_new_cars(2,:)'/data_raw_new_cars(2,1)), num2cell(data_raw_new_cars(3,:)'/data_raw_new_cars(3,1))];
 writecell([header_norm; data_out], output_xlsx, 'Sheet', 'norm_new_cars');
@@ -202,6 +178,4 @@ end
 
 fprintf('Excel saved: %s\n', output_xlsx);
 
-
 end
-

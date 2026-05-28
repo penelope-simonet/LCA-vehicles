@@ -48,6 +48,7 @@ rouge        = [0.85 0.10 0.10];
 jaune        = [0.80 0.68 0.00];
 bleu_fonce   = [0.08 0.20 0.55];
 bleu_clair   = [0.7 0.85 1];
+bleu_cyan    = [0.3 0.7  1];
 vert         = [0.10 0.60 0.20];
 vert_clair   = [0.50 1.00 0.00];
 orange       = [0.95 0.50 0.05];
@@ -79,7 +80,7 @@ cat_colors_EF(15,:) = violet_clair; cat_lines_EF{15} = '-';  cat_markers_EF{15} 
 cat_colors_EF(16,:) = noir;         cat_lines_EF{16} = '-';  cat_markers_EF{16} = 'none';
 cat_colors_EF(17,:) = vert_clair;   cat_lines_EF{17} = '-';  cat_markers_EF{17} = 'none';
 cat_colors_EF(18,:) = orange;       cat_lines_EF{18} = '-';  cat_markers_EF{18} = 'none';
-cat_colors_EF(19,:) = bleu_clair;   cat_lines_EF{19} = '-';  cat_markers_EF{19} = 'none';
+cat_colors_EF(19,:) = bleu_cyan;    cat_lines_EF{19} = '-';  cat_markers_EF{19} = 'none';
 
 marker_step = max(1, floor(n_years / 8));
 
@@ -147,7 +148,7 @@ h_leg(12) = plot(ax, NaN, NaN, '-',  'Color', violet,       'LineWidth', 2);
 h_leg(13) = plot(ax, NaN, NaN, '-',  'Color', marron,       'LineWidth', 2);
 h_leg(14) = plot(ax, NaN, NaN, '-',  'Color', gris,         'LineWidth', 2);
 h_leg(15) = plot(ax, NaN, NaN, '-',  'Color', noir,         'LineWidth', 2);
-h_leg(16) = plot(ax, NaN, NaN, '-',  'Color', bleu_clair,   'LineWidth', 2);
+h_leg(16) = plot(ax, NaN, NaN, '-',  'Color', bleu_cyan,   'LineWidth', 2);
 
 legend(ax, h_leg, leg_labels, 'Location', 'eastoutside', 'FontSize', 6.5, 'Box', 'off');
 
@@ -164,7 +165,12 @@ exportgraphics(fig, output_pdf, 'ContentType', 'vector');
 
 
 %% Export source data to Excel
-output_xlsx = fullfile(output_dir, 'source_data_normalization_EF_planetary_boundaries.xlsx');
+base_path  = fileparts(fileparts(fileparts(mfilename('fullpath'))));
+output_dir = fullfile(base_path, 'Output');
+
+source_dir = fullfile(output_dir, 'Source_data');
+if ~exist(source_dir, 'dir'), mkdir(source_dir); end
+output_xlsx = fullfile(source_dir, 'normalization_EF_planetary_boundaries.xlsx');
 if exist(output_xlsx, 'file'), delete(output_xlsx); end
 
 header = [{'Category'}, num2cell(years)];

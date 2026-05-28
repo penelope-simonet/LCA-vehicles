@@ -167,7 +167,12 @@ exportgraphics(fig, output_pdf, 'ContentType', 'vector');
 fprintf('PDF saved: %s\n', output_pdf);
 
 %% Export source data to Excel
-output_xlsx = fullfile(output_dir, 'source_data_spider_new_cars.xlsx');
+base_path  = fileparts(fileparts(fileparts(mfilename('fullpath'))));
+output_dir = fullfile(base_path, 'Output');
+
+source_dir = fullfile(output_dir, 'Source_data');
+if ~exist(source_dir, 'dir'), mkdir(source_dir); end
+output_xlsx = fullfile(source_dir, 'spider_new_cars.xlsx');
 if exist(output_xlsx, 'file'), delete(output_xlsx); end
 
 header = [{'Category'}, num2cell(years_to_plot)];

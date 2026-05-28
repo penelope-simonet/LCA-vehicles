@@ -5,6 +5,17 @@ midpoint_categories = get_midpoint_categories();
 n_cats = length(midpoint_categories);
  
 years = [obj.State.year];
+
+base_path = fileparts(fileparts(fileparts(mfilename('fullpath'))));
+output_dir = fullfile(base_path, 'Output');
+pdf_stock_dir   = fullfile(output_dir, 'internal_norm_midpoints', 'PDF_stock');
+pdf_new_dir     = fullfile(output_dir, 'internal_norm_midpoints', 'PDF_new_cars');
+pdf_bars_stock  = fullfile(output_dir, 'internal_norm_midpoints', 'PDF_bars_stock');
+pdf_bars_new    = fullfile(output_dir, 'internal_norm_midpoints', 'PDF_bars_new_cars');
+mat_dir         = fullfile(output_dir, 'internal_norm_midpoints', 'MAT');
+for d = {pdf_stock_dir, pdf_new_dir, pdf_bars_stock, pdf_bars_new, mat_dir}
+    if ~exist(d{1}, 'dir'), mkdir(d{1}); end
+end
  
 flds = {'value_glider','value_powertrain','value_energy_storage', ...
     'value_maintenance','value_EoL', ...
@@ -50,10 +61,10 @@ for cat = 1:n_cats
     title(['Midpoint: ' cat_name ' : vehicle stock'])
     ylim([0 2])
  
-    filename = ['Output/midpoints_' cat_name_safe '_internal_norm_vehicle_stock.pdf'];
+    filename = fullfile(pdf_stock_dir, ['midpoints_' cat_name_safe '_internal_norm_vehicle_stock.pdf']);
     if exist(filename, 'file'), delete(filename); end
     print('-vector', '-dpdf', '-r1000', filename)
-    save(['Output/midpoints_' cat_name_safe '_internal_norm_vehicle_stock.mat'], 'plot_matrix', 'years', 'cat_name');
+    save(fullfile(mat_dir, ['midpoints_' cat_name_safe '_internal_norm_vehicle_stock.mat']), 'plot_matrix', 'years', 'cat_name');
  
     %% internal normalization : new cars 
     if data_raw_new_cars(1) ~= 0
@@ -69,10 +80,11 @@ for cat = 1:n_cats
     title(['Midpoint: ' cat_name ' : new cars'])
     ylim([0 2])
  
-    filename = ['Output/midpoints_' cat_name_safe '_internal_norm_new_vehicles.pdf'];
+   
+    filename = fullfile(pdf_new_dir, ['midpoints_' cat_name_safe '_internal_norm_new_vehicles.pdf']);
     if exist(filename, 'file'), delete(filename); end
     print('-vector', '-dpdf', '-r1000', filename)
-    save(['Output/midpoints_' cat_name_safe '_internal_norm_new_vehicles.mat'], 'plot_matrix_new_cars', 'years', 'cat_name');
+    save(fullfile(mat_dir, ['midpoints_' cat_name_safe '_internal_norm_new_vehicles.mat']), 'plot_matrix_new_cars', 'years', 'cat_name');
  
     %% stacked bars : vehicle stock
     data_components          = zeros(length(flds), length(years));
@@ -94,10 +106,10 @@ for cat = 1:n_cats
     title(['Midpoint: ' cat_name ' : vehicle stock']);
     legend(legend_array, 'Location', 'eastoutside')
  
-    filename = ['Output/midpoints_' cat_name_safe '_vehicle_stock.pdf'];
+    filename = fullfile(pdf_bars_stock, ['midpoints_' cat_name_safe '_vehicle_stock.pdf']);
     if exist(filename, 'file'), delete(filename); end
     print('-vector', '-dpdf', '-r1000', filename)
-    save(['Output/midpoints_' cat_name_safe '_vehicle_stock.mat'], 'data_components', 'years', 'flds');
+    save(fullfile(mat_dir, ['midpoints_' cat_name_safe '_vehicle_stock.mat']), 'data_components', 'years', 'flds');
  
     %% stacked bars : new cars
     figure('Visible', 'off')
@@ -109,12 +121,30 @@ for cat = 1:n_cats
     title(['New cars : midpoint: ' cat_name]);
     legend(legend_array, 'Location', 'eastoutside')
  
-    filename = ['Output/midpoints_' cat_name_safe '_new_vehicles.pdf'];
+    filename = fullfile(pdf_bars_new, ['midpoints_' cat_name_safe '_new_vehicles.pdf']);
     if exist(filename, 'file'), delete(filename); end
     print('-vector', '-dpdf', '-r1000', filename)
-    save(['Output/midpoints_' cat_name_safe '_new_vehicles.mat'], 'data_components_new_cars', 'years', 'flds');
+    save(fullfile(mat_dir, ['midpoints_' cat_name_safe '_new_vehicles.mat']), 'data_components_new_cars', 'years', 'flds');
  
     close all
+
+    % Export source data to Excel
+    source_dir = fullfile(output_dir, 'Source_data');
+    if ~exist(source_dir, 'dir'), mkdir(source_dir); end
+    output_xlsx = fullfile(source_dir, 'internal_normalization_midpoints.xlsx');
+    
+    cat_name_clean = strrep(strrep(strrep(strrep(cat_name_safe, ':', ''), '?', ''), '*', ''), '[', '');
+    cat_name_clean = cat_name_clean(1:min(end,25));
+    
+    header_norm = {'Year', 'Normalized_stock', 'Normalized_new_cars'};
+    data_out = [num2cell(years'), num2cell(plot_matrix'), num2cell(plot_matrix_new_cars')];
+    writecell([header_norm; data_out], output_xlsx, 'Sheet', ['norm_' cat_name_clean]);
+    
+    header_comp = [{'Year'}, legend_array];
+    data_out = [num2cell(years'), num2cell(data_components')];
+    writecell([header_comp; data_out], output_xlsx, 'Sheet', ['stock_' cat_name_clean]);
+    data_out = [num2cell(years'), num2cell(data_components_new_cars')];
+    writecell([header_comp; data_out], output_xlsx, 'Sheet', ['new_' cat_name_clean]);
  
 end % for cat
  

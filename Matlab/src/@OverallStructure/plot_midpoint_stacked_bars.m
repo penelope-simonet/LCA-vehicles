@@ -158,7 +158,7 @@ legend(ax, h, contributor_labels, ...
 base_path  = fileparts(fileparts(fileparts(mfilename('fullpath'))));
 output_dir = fullfile(base_path, 'Output');
 if ~exist(output_dir, 'dir'), mkdir(output_dir); end
-output_pdf = fullfile(output_dir, 'comparison_2000_2010_2023_midpoints_stacked_bars.pdf');
+output_pdf = fullfile(output_dir, 'comparison_2000_2010_2023_stacked_bars_midpoints_ReCiPe.pdf');
 
 set(fig, 'PaperUnits', 'centimeters');
 set(fig, 'PaperSize', [42 28]);
@@ -167,7 +167,12 @@ drawnow;
 exportgraphics(fig, output_pdf, 'ContentType', 'vector');
 
 %% Export source data to Excel
-output_xlsx = fullfile(output_dir, 'source_data_stacked_bars_ReCiPe.xlsx');
+base_path  = fileparts(fileparts(fileparts(mfilename('fullpath'))));
+output_dir = fullfile(base_path, 'Output');
+
+source_dir = fullfile(output_dir, 'Source_data');
+if ~exist(source_dir, 'dir'), mkdir(source_dir); end
+output_xlsx = fullfile(source_dir, 'stacked_bars_ReCiPe.xlsx');
 if exist(output_xlsx, 'file'), delete(output_xlsx); end
 
 header = [{'Category'}, contributor_labels];
