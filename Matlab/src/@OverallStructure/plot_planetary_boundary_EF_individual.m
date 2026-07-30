@@ -3,7 +3,6 @@ function plot_planetary_boundary_EF_individual(obj)
 % Planetary boundaries for EF v3.1 individual midpoint categories
 % Source: Sala et al. (2020), Table 3; Horup et al. (2025) for land use
 % Per capita allocation (egalitarian)
-% Layout: 4 categories per page (2x2 grid), shared legend on right side
 
 NormFactors  = get_normalization_factors_EF();
 pop_norway   = 5400000;
@@ -36,7 +35,7 @@ page = 0;
         close(fig);
     end
 
-% Precompute all categories to plot
+% categories
 cats_data = struct();
 n_valid = 0;
 
@@ -95,7 +94,7 @@ for ci = 1:n_cats_EF
     cats_data(n_valid).total      = embodied + operational + infra;
 end
 
-% Plot 4 per page
+% plot
 cats_per_page = 4;
 n_pages = ceil(n_valid / cats_per_page);
 
@@ -110,7 +109,6 @@ for pg = 1:n_pages
     for k = 1:n_on_page
         d = cats_data(idx_start + k - 1);
 
-        % 2x2 grid, leave right 20% for legend
         row = ceil(k/2);
         col = mod(k-1, 2) + 1;
 
@@ -122,52 +120,50 @@ for pg = 1:n_pages
         ax = axes('Parent', fig, 'Position', [left bottom width height]); 
         hold(ax, 'on');
 
-        area(ax, years, d.embodied + d.operational + d.infra, ...
+        area(ax, years, d.operational + d.embodied + d.infra, ...
             'FaceColor', [0.47 0.67 0.19], 'EdgeColor', 'none', 'FaceAlpha', 0.7);
-        area(ax, years, d.embodied + d.operational, ...
-            'FaceColor', [0.85 0.33 0.10], 'EdgeColor', 'none', 'FaceAlpha', 0.7);
-        area(ax, years, d.embodied, ...
+        area(ax, years, d.operational + d.embodied, ...
             'FaceColor', [0.20 0.45 0.70], 'EdgeColor', 'none', 'FaceAlpha', 0.7);
+        area(ax, years, d.operational, ...
+            'FaceColor', [0.85 0.33 0.10], 'EdgeColor', 'none', 'FaceAlpha', 0.7);
         plot(ax, years, d.total, '-k', 'LineWidth', 1.2);
 
-        plot(ax, [years(1) years(end)], [1 1], '--', 'LineWidth', 1.0, 'Color', [1 0 0 0.7]);
+        plot(ax, [years(1) years(end)], [1 1], '--', 'LineWidth', 2.0, 'Color', [1 0 0 0.7]);
 
         ylim(ax, [0 2]);
         xlim(ax, [years(1) years(end)]);
         grid(ax, 'on');
         box(ax, 'off');
-        set(ax, 'FontSize', 7);
+        set(ax, 'FontSize', 8);
 
-        title(ax, sprintf('%s\n(%s)', d.cat_name, d.cat_unit), ...
-            'FontSize', 7.5, 'FontWeight', 'bold', 'Interpreter', 'none');
-        xlabel(ax, 'Year', 'FontSize', 7);
-        ylabel(ax, 'Share of PB (Norway)', 'FontSize', 7);
+        title(ax, sprintf('%s (%s)', d.cat_name, d.cat_unit), ...
+            'FontSize', 9, 'FontWeight', 'bold', 'Interpreter', 'none');
+        xlabel(ax, 'Year', 'FontSize', 8);
+        ylabel(ax, 'Share of PB (Norway)', 'FontSize', 8);
 
-        % FIX 1 : un seul label rouge sur la ligne rouge, plus de texte bordeaux
         pb_label = sprintf('Planetary boundary = %.2e %s/yr', d.PB_norway, d.cat_unit);
         text(ax, years(1) + 0.3, 1.04, pb_label, ...
-            'FontSize', 5.5, 'Color', 'r', 'Interpreter', 'none', ...
+            'FontSize', 8, 'Color', 'r', 'Interpreter', 'none', ...
             'VerticalAlignment', 'bottom');
     end
 
-      % Légende via annotation invisible
+   % legend
     ax_tmp = axes('Parent', fig, 'Position', [0.83 0.30 0.14 0.35], ...
         'Visible', 'off', 'Color', 'none', 'XColor', 'none', 'YColor', 'none');
     hold(ax_tmp, 'on');
-    h1 = fill(ax_tmp, NaN, NaN, [0.20 0.45 0.70], 'EdgeColor', 'none', 'FaceAlpha', 0.7);
-    h2 = fill(ax_tmp, NaN, NaN, [0.85 0.33 0.10], 'EdgeColor', 'none', 'FaceAlpha', 0.7);
-    h3 = fill(ax_tmp, NaN, NaN, [0.47 0.67 0.19], 'EdgeColor', 'none', 'FaceAlpha', 0.7);
+    h1 = fill(ax_tmp, NaN, NaN, [0.47 0.67 0.19], 'EdgeColor', 'none', 'FaceAlpha', 0.7);
+    h2 = fill(ax_tmp, NaN, NaN, [0.20 0.45 0.70], 'EdgeColor', 'none', 'FaceAlpha', 0.7);
+    h3 = fill(ax_tmp, NaN, NaN, [0.85 0.33 0.10], 'EdgeColor', 'none', 'FaceAlpha', 0.7);
     h4 = plot(ax_tmp, NaN, NaN, '-k',  'LineWidth', 1.2);
     h5 = plot(ax_tmp, NaN, NaN, '--r', 'LineWidth', 1.0);
-    leg = legend(ax_tmp, [h1 h2 h3 h4 h5], ...
-        {'Embodied', 'Operational', 'Infrastructure', 'Total', 'Planetary boundary'}, ...
-        'Location', 'best', 'FontSize', 7.5, 'Box', 'on', 'Color', 'white', 'EdgeColor', [0.5 0.5 0.5]);
+    leg = legend(ax_tmp, [h3 h2 h1 h4 h5], ...
+        {'Operational', 'Embodied', 'Infrastructure', 'Total', 'Planetary boundary'}, ...
+        'Location', 'best', 'FontSize', 9, 'Box', 'on', 'Color', 'white', 'EdgeColor', [0.5 0.5 0.5]);
 
-    % FIX 3 : titre de page déplacé au-dessus de la légende (pas en haut de figure)
     annotation(fig, 'textbox', [0.815 0.67 0.17 0.10], ...
         'String', {'EF v3.1 midpoint impacts', 'vs planetary boundaries', '(per capita, Sala et al. 2020)'}, ...
         'HorizontalAlignment', 'center', 'VerticalAlignment', 'bottom', ...
-        'FontSize', 7, 'FontWeight', 'bold', 'EdgeColor', 'none', ...
+        'FontSize', 9, 'FontWeight', 'bold', 'EdgeColor', 'none', ...
         'BackgroundColor', 'none', 'Interpreter', 'none');
 
     page = page + 1;

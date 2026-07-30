@@ -7,7 +7,7 @@ MidpointArray(1:42) = MidpointCategories;
 c=1;
 MidpointArray(c).name = 'acidification: terrestrial';
 MidpointArray(c).framework = 'Recipe 2016';
-MidpointArray(c).unit = '';
+MidpointArray(c).unit = 'kg SO2eq';
 
 c=c+1;
 MidpointArray(c).name = 'climate change';
@@ -23,84 +23,84 @@ MidpointArray(c).unit = 'kg CO2eq';
 c=c+1;
 MidpointArray(c).name = 'ecotoxicity: freshwater';
 MidpointArray(c).framework = 'Recipe 2016';
-MidpointArray(c).unit = '';
+MidpointArray(c).unit = 'kg 1,4-DCB';
 
 c=c+1;
 MidpointArray(c).name = 'ecotoxicity: marine';
 MidpointArray(c).framework = 'Recipe 2016';
-MidpointArray(c).unit = '';
+MidpointArray(c).unit = 'kg 1,4-DCB';
 
 c=c+1;
 MidpointArray(c).name = 'ecotoxicity: terrestrial';
 MidpointArray(c).framework = 'Recipe 2016';
-MidpointArray(c).unit = '';
+MidpointArray(c).unit = 'kg 1,4-DCB';
 
 c=c+1;
 MidpointArray(c).name = 'energy resources depletion: non-renewable';
 MidpointArray(c).framework = 'Recipe 2016';
-MidpointArray(c).unit = '';
+MidpointArray(c).unit = 'oil-eq';
 
 c=c+1;
 MidpointArray(c).name = 'eutrophication: freshwater';
 MidpointArray(c).framework = 'Recipe 2016';
-MidpointArray(c).unit = '';
+MidpointArray(c).unit = 'kg P';
 
 c=c+1;
 MidpointArray(c).name = 'eutrophication: marine';
 MidpointArray(c).framework = 'Recipe 2016';
-MidpointArray(c).unit = '';
+MidpointArray(c).unit = 'kg N';
 
 c=c+1;
 MidpointArray(c).name = 'human toxicity: carcinogenic';
 MidpointArray(c).framework = 'Recipe 2016';
-MidpointArray(c).unit = '';
+MidpointArray(c).unit = 'kg 1,4-DCB';
 
 c=c+1;
 MidpointArray(c).name = 'human toxicity: non-carcinogenic';
 MidpointArray(c).framework = 'Recipe 2016';
-MidpointArray(c).unit = '';
+MidpointArray(c).unit = 'kg 1,4-DCB';
 
 c=c+1;
 MidpointArray(c).name = 'ionising radiation';
 MidpointArray(c).framework = 'Recipe 2016';
-MidpointArray(c).unit = '';
+MidpointArray(c).unit = 'kBq Co-60';
 
 c=c+1;
 MidpointArray(c).name = 'land use';
 MidpointArray(c).framework = 'Recipe 2016';
-MidpointArray(c).unit = '';
+MidpointArray(c).unit = 'm2a';
 
 c=c+1;
 MidpointArray(c).name = 'material resources: metals/minerals';
 MidpointArray(c).framework = 'Recipe 2016';
-MidpointArray(c).unit = '';
+MidpointArray(c).unit = 'kg Cu-eq';
 
 
 c=c+1;
 MidpointArray(c).name = 'ozone depletion';
 MidpointArray(c).framework = 'Recipe 2016';
-MidpointArray(c).unit = '';
+MidpointArray(c).unit = 'kg CFC11eq';
 
 c=c+1;
 MidpointArray(c).name = 'particulate matter formation';
 MidpointArray(c).framework = 'Recipe 2016';
-MidpointArray(c).unit = '';
+MidpointArray(c).unit = 'kg PM2.5eq';
 
 
 c=c+1;
 MidpointArray(c).name = 'photochemical oxidant formation: human health';
 MidpointArray(c).framework = 'Recipe 2016';
-MidpointArray(c).unit = '';
+MidpointArray(c).unit = 'kg NOx eq';
 
 c=c+1;
 MidpointArray(c).name = 'photochemical oxidant formation: terrestrial ecosystems';
 MidpointArray(c).framework = 'Recipe 2016';
-MidpointArray(c).unit = '';
+MidpointArray(c).unit = 'kg NOx eq';
 
 c=c+1;
 MidpointArray(c).name = 'water use';
 MidpointArray(c).framework = 'Recipe 2016';
-MidpointArray(c).unit = '';
+MidpointArray(c).unit = 'm3';
 
 c=c+1;
 MidpointArray(c).name = 'energy resources: non-renewable';
@@ -191,7 +191,7 @@ MidpointArray(c).unit = 'kBq U235-Eq';
 c=c+1; 
 MidpointArray(c).name = 'land use EF'; 
 MidpointArray(c).framework = 'EF v3.1'; 
-MidpointArray(c).unit = 'dimensionless';
+MidpointArray(c).unit = 'Pt';
 
 c=c+1; 
 MidpointArray(c).name = 'material resources: metals/minerals EF';
@@ -226,4 +226,3 @@ end
 %%
 
 end
-
