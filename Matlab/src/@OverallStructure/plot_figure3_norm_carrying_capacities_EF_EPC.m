@@ -168,7 +168,7 @@ output_dir = fullfile(base_path, 'Output');
 
 source_dir = fullfile(output_dir, 'Source_data');
 if ~exist(source_dir, 'dir'), mkdir(source_dir); end
-output_xlsx = fullfile(source_dir, 'plot_figure3_norm_carrying_capacities_EF_EPC.xlsx');
+output_xlsx = fullfile(source_dir, 'figure3_norm_carrying_capacities_EF_EPC.xlsx');
 if exist(output_xlsx, 'file'), delete(output_xlsx); end
 
 header = [{'Category'}, num2cell(years)];
@@ -257,7 +257,7 @@ end
 
 legend(ax2, h_leg2, leg_labels_sorted, 'Location', 'eastoutside', 'FontSize', 10, 'Box', 'off');
 
-output_pdf2 = fullfile(output_dir, 'plot_figure3_norm_carrying_capacities_EF_EPC_sorted_legend.pdf');
+output_pdf2 = fullfile(output_dir, 'figure3_norm_carrying_capacities_EF_EPC_sorted_legend.pdf');
 set(fig2, 'PaperUnits', 'centimeters');
 set(fig2, 'PaperSize', [40 18]);
 

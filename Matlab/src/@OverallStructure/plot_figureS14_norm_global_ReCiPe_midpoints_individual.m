@@ -25,7 +25,7 @@ if ~exist(output_dir, 'dir'), mkdir(output_dir); end
 output_pdf = fullfile(output_dir, 'figureS14_norm_global_ReCiPe_midpoints_individual.pdf');
 if exist(output_pdf, 'file'), delete(output_pdf); end
 
-output_pdf_portrait = fullfile(output_dir, 'plot_figureS14_norm_global_ReCiPe_midpoints_individual_portrait.pdf');
+output_pdf_portrait = fullfile(output_dir, 'figureS14_norm_global_ReCiPe_midpoints_individual_portrait.pdf');
 if exist(output_pdf_portrait, 'file'), delete(output_pdf_portrait); end
 
 page = 0;
